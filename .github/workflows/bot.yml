@@ -1,0 +1,67 @@
+name: bot-runtime
+
+# ── RUNTIME ONLY：每 15 分鐘執行 dry-run pipeline（log-only）──
+# 與 ci.yml 完全分離：本檔不跑 pytest，只跑 runtime tick 並 commit-back 狀態。
+on:
+  schedule:
+    # 每 15 分鐘（GitHub cron 採 UTC；bot 時間窗邏輯內部自行轉 TW）。
+    # 15 < 賽前窗 40 分 → 任一場的賽前窗必含 ≥2 個 tick，避免漏窗。
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}       # 手動觸發：debug / replay runtime
+
+# commit-back 需要寫入權限
+permissions:
+  contents: write
+
+# 不取消進行中的 run，避免 commit-back 寫到一半被中斷
+concurrency:
+  group: bot-runtime
+  cancel-in-progress: false
+
+jobs:
+  run:
+    name: runtime tick (dry-run push)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 完整 pipeline：fetch → pool → window → idempotency → predict → output
+      # DRY_RUN=true → log-only（不送 Telegram、不需 TG secrets）。
+      # 最終上線驗收時改 DRY_RUN=false 並加入 TG_TOKEN / TG_CHAT secrets。
+      - name: Runtime tick
+        env:
+          DRY_RUN: "false"
+          ODDS_API_KEY_1: ${{ secrets.ODDS_API_KEY_1 }}
+          ODDS_API_KEY_2: ${{ secrets.ODDS_API_KEY_2 }}
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT: ${{ secrets.TG_CHAT }}
+        run: python src/sports_prediction.py push
+
+      # commit-back（repo as DB）：僅當狀態有變更才 commit，絕不 empty commit。
+      # if: always() → 即使前一步異常，已落盤的 cooldown / flags 仍持久化。
+      - name: Commit back state
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flags.json weekly_games.json key_state.json predictions.json verified_history.csv
+          if git diff --staged --quiet; then
+            echo "No state changes; skip commit."
+          else
+            git commit -m "[skip ci] update bot state"
+            git push
+          fi
