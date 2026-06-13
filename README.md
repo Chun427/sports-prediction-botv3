@@ -1,4 +1,4 @@
-# sports-prediction-bot# 🎯 精算師預測系統 · sports-prediction-bot
+# 🎯 精算師預測系統 · sports-prediction-bot
 
 以 **GitHub Actions 為核心的賽事分析狀態機**。每 15 分鐘自動執行一次 runtime tick：
 
