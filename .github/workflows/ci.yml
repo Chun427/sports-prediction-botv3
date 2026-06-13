@@ -1,0 +1,48 @@
+name: ci
+
+# ── CI ONLY：提交驗證層（與 bot runtime 完全分離）──────
+on:
+  push:
+    branches: [main]
+    paths-ignore:           # 狀態檔由 bot commit-back，不需觸發 CI
+      - flags.json
+      - weekly_games.json
+      - key_state.json
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - flags.json
+      - weekly_games.json
+      - key_state.json
+  workflow_dispatch: {}
+
+permissions:
+  contents: read            # CI 只讀；測試一律用 fake，不需任何 secret
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: pytest (Python 3.11)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest -q
