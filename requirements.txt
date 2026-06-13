@@ -1,0 +1,16 @@
+# ── 核心 (production) ────────────────────────────────
+requests>=2.31        # Odds API / Telegram HTTP
+numpy>=1.26           # Monte Carlo 模擬
+pandas>=2.1           # 數據處理 / pybaseball 依賴
+tzdata>=2024.1        # zoneinfo 時區資料 (跨平台保險)
+
+# ── 數據補強 ─────────────────────────────────────────
+nba_api>=1.4          # NBA 近況數據
+pybaseball>=2.2       # MLB 近況數據
+
+# ── AI 模型 (optional) ───────────────────────────────
+xgboost>=2.0          # 歷史資料充足時啟用
+scikit-learn>=1.4     # 訓練 / 評估輔助
+
+# ── 開發 / 測試 ──────────────────────────────────────
+pytest>=8.0

@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# 機密
+.env
+
+# 衍生資料 (CSV / metrics 由 CI 產生；如需跨 run 學習可改為追蹤)
+data/
+
+# 註：flags.json 與 weekly_games.json 為跨 run 狀態，
+#     刻意「不」忽略，由 GitHub Actions commit 回 repo 以維持 idempotency。
