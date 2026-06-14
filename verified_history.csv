@@ -1,0 +1,2 @@
+verified_at,game_id,sport,winner,pick_outcome,pick_hit,moneyline_hit,realized_return,fair_prob_winner,model
+2026-06-15T03:17:35+08:00,5db8a5b07bca4c3b2486bb503bbe96fc,MLB,away,,,,,0.4115,market_implied_v1
