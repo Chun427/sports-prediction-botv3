@@ -20,6 +20,8 @@ from datetime import datetime
 
 import obs
 import kelly as _kelly
+import result_verifier
+import data_manager as _dm
 from constants import (
     PREGAME_TEMPLATE_TAG, POSTGAME_TEMPLATE_TAG, TELEGRAM_API_BASE, TG_RETRY,
     PREGAME_WINDOW_MIN, EARLY_WINDOW_MIN,
@@ -86,27 +88,44 @@ _WINNER_ZH = {"home": "主隊", "away": "客隊", "draw": "和局"}
 
 
 def render_postgame(verification: dict, prediction: dict, result: dict) -> str:
-    """固定 UI contract（postgame）：版面恆定、每 section 必存在。
-    本系統目前僅驗證『獨贏(moneyline)』→ 精準比分/讓分/大小分一律 N/A（不捏造）；
-    命中分母 = 實際已驗證項數（誠實），不灌成 /4。"""
+    """固定 UI contract（postgame）：驗證『賽前主推方向』（與賽前 render 同一 main_direction）。
+    顯示 預測方向 / 實際結果 / 命中 ✅❌ / 累積方向命中率。
+    精準比分・讓分・大小分仍 N/A（系統未驗，不捏造）。"""
     home = prediction.get("home", "")
     away = prediction.get("away", "")
-    pick = verification.get("pick_outcome")
+    pick = verification.get("pick_outcome")     # = main_direction（與賽前主推一致）
     hit = verification.get("pick_hit")
+    winner = verification.get("winner")
     rr = verification.get("realized_return")
 
-    if pick is not None:
-        verified_n = 1
-        hits = 1 if hit else 0
-        ml_result = "✅" if hit else "❌"
-        rate = f"{(hits / verified_n) * 100:.0f}%"
-        hit_line = f"命中結果：{hits} / {verified_n}（{rate}）"
-        edge_eval = "✔ 命中" if hit else "✘ 未中"
+    def _label(o):
+        return {"home": f"{home} 勝出", "away": f"{away} 勝出", "draw": "和局"}.get(o, "N/A")
+
+    pred_label = _label(pick) if pick is not None else "N/A"
+    actual_label = _label(winner) if winner else "N/A"
+    if pick is None:
+        result_line, ml_result = "結果：N/A", "N/A"
+    elif hit:
+        result_line, ml_result = "結果：✅ 命中", "✅"
     else:
-        ml_result = "N/A"
-        hit_line = "命中結果：N/A"
-        edge_eval = "N/A"
+        result_line, ml_result = "結果：❌ 未命中", "❌"
+
+    # 累積方向命中率（含本場）：讀 verified_history（guarded，失敗不影響推播）
+    rate_line = "方向命中率：N/A"
+    try:
+        rows = _dm.read_verified()
+        h = sum(1 for r in rows if str(r.get("pick_hit", "")).strip().lower() == "true")
+        t = sum(1 for r in rows if str(r.get("pick_outcome", "")).strip() not in ("", "None"))
+        if pick is not None:                    # 本場尚未寫入 history → 計入
+            t += 1
+            h += 1 if hit else 0
+        if t > 0:
+            rate_line = f"方向命中率：{h} / {t}（{h / t * 100:.0f}%）"
+    except Exception:  # noqa: BLE001 — 統計失敗不可中斷推播
+        pass
+
     ev_eval = ("✔ 正向" if rr > 0 else "✘ 負向") if isinstance(rr, (int, float)) else "N/A"
+    edge_eval = ("✔ 命中" if hit else "✘ 未中") if pick is not None else "N/A"
     date_src = prediction.get("start_time", "") or verification.get("verified_at", "")
 
     out = [
@@ -114,7 +133,11 @@ def render_postgame(verification: dict, prediction: dict, result: dict) -> str:
         f"📅 台灣時間 {_fmt_date_tw(date_src)}",
         f"{away} vs {home}",
         "━━━━━━━━━━━━━━━",
-        hit_line,
+        f"預測：{pred_label}",
+        f"實際：{actual_label}",
+        result_line,
+        "━━━━━━━━━━━━━━━",
+        rate_line,
         "━━━━━━━━━━━━━━━",
         f"獨贏：{ml_result}",
         "精準比分：N/A",
@@ -124,9 +147,6 @@ def render_postgame(verification: dict, prediction: dict, result: dict) -> str:
         "📊 模型表現",
         f"- EV預測準確性：{ev_eval}",
         f"- Edge命中：{edge_eval}",
-        "📊 模型 vs 市場",
-        "模型優勢：N/A",
-        "市場偏差：N/A",
         "────────────────",
         "📌 預測模式：量化分析",
     ]
@@ -331,6 +351,14 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     k = _kelly.compute_kelly(prediction)
     kfrac = k["kelly"]["clipped_fraction"]
     risk_zh = {"low": "低", "medium": "中", "high": "高"}.get(k.get("risk_level"), "N/A")
+    # DEBUG（診斷用，不改 Kelly 公式）：印主推方向的 model/market/edge/odds/kelly，確認為何多為 0%
+    _dbg = result_verifier.main_direction(prediction)
+    obs.info("kelly.debug", direction=_dbg,
+             model_prob=(mc.get(_dbg) if mc else None),
+             market_prob=fp.get(_dbg),
+             edge=edge.get(_dbg),
+             odds=odds.get(_dbg),
+             kelly_fraction=kfrac)
 
     def _wp(team, val):
         return f"{team}  {_bar10(val)}  {val * 100:.1f}%" if isinstance(val, (int, float)) else f"{team}  N/A"
@@ -349,10 +377,6 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     # 標題：early=🕐 12小時、final=⚡ 40分鐘（純顯示，不改任何邏輯）
     _title2 = ("🕐 量化預測模型（賽前 12小時預測）" if header_kind == "early"
                else f"⚡ 量化預測模型（賽前 {PREGAME_WINDOW_MIN} 分鐘）")
-    # 次要/備選：顯示模型的總分線 / 讓分盤（有資料才填，否則 N/A）。
-    # 註：V3 模型以盤口線為參數，無獨立大小/讓分方向 → 只列線值，不捏造「大/小・蓋牌」pick。
-    total_pick = f"總分大小 → 盤口 {total_label}" if total_label != "N/A" else "N/A"
-    hcap_pick = f"讓分盤 → {spread_label}" if spread_label != "N/A" else "N/A"
 
     out = [
         "🎯 精算師預測系統",
@@ -392,20 +416,30 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     def _dir_team(_k: str) -> str:
         return {"home": home, "away": away, "draw": "和局"}.get(_k, "N/A")
 
+    # 主推＝main_direction（與賽後驗證同一函式，單一真實來源）
     if use_v1_decision() and mc:
-        _ordered = sorted(mc.items(), key=lambda kv: kv[1], reverse=True)
-        _top_k, _top_p = _ordered[0]
-        _ranks = ["1️⃣", "2️⃣", "3️⃣"]
-        _rank_lines = ["📈 勝率排序"] + [
-            f"{_ranks[i]} {_dir_zh(_k)} {_p * 100:.1f}%" for i, (_k, _p) in enumerate(_ordered)
-        ]
-        # 主推顯示邏輯與 V1 一致：MC argmax → 獨贏方向（純顯示，不改 best_pick / Kelly / edge）
-        main = "獨贏盤 → 和局" if _top_k == "draw" else f"獨贏盤 → {_dir_team(_top_k)} 勝出"
+        _dir = result_verifier.main_direction(prediction)
+        main = "獨贏盤 → 和局" if _dir == "draw" else f"獨贏盤 → {_dir_team(_dir)} 勝出"
     else:
-        _rank_lines = ["📈 勝率排序", "N/A"]
         pick = prediction.get("best_pick")
         main = (f"獨贏 → {_team_label(prediction, pick['outcome'])}（@ {pick['odds']}）"
                 if pick else "N/A")
+    # 備選（讓分）：supremacy 正負＝市場看好方 + 讓分線（誠實顯示市場讓分方向，非 cover pick）。
+    _sup = score.get("supremacy")
+    if isinstance(_sup, (int, float)) and abs(_sup) >= 0.05:
+        hcap_pick = (f"讓分盤 → {home}({-_sup:+.1f})" if _sup > 0
+                     else f"讓分盤 → {away}({_sup:+.1f})")
+    else:
+        hcap_pick = "N/A"
+    # 次要（大小分）：使用者指定之顯示推導規則。expected_total 為 V3 唯一總分估計；
+    # V3 無獨立 market_total（兩者同源）→ 依規則平手＝小分。純顯示，不影響預測/Kelly。
+    _et = score.get("expected_total")
+    if isinstance(_et, (int, float)):
+        _mt = score.get("market_total", _et)
+        _ou_dir = "大分" if _et > _mt else "小分"   # 平手/小於 → 小分（依規則）
+        ou_pick = f"總分大小 → {_ou_dir}({_et:g})"
+    else:
+        ou_pick = "N/A"
     out += [
         _DREAM_DIV, "📊 盤口深度分析",
         f"讓分盤口     {spread_label}",
@@ -415,11 +449,9 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         f"{home}:{_od(odds.get('home'))}",
         _DREAM_DIV, "💰 台灣運彩實戰建議",
         f"🔮【主推】{main}",
-        f"💎【次要】{total_pick}",
+        f"💎【次要】{ou_pick}",
         f"⭐【備選】{hcap_pick}",
-        _DREAM_DIV,
-        *_rank_lines,
-        "（🎯 主推＝MC 模型方向；📈 為模型勝率排序。僅供參考，非 +EV 投注建議；下注比例見風控）",
+        "（🔮 主推＝MC 方向；💎 次要/⭐ 備選＝市場盤口方向；僅供參考，非 +EV）",
         _DREAM_DIV, "📊 風控資訊",
         f"- Kelly：{kfrac * 100:.1f}%",
         f"- Risk Level：{risk_zh}",
