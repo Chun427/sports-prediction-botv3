@@ -1,0 +1,48 @@
+"""V3.1 additive：early(12h) 推播。驗證窗界、idempotency('early')、
+與 'pre' 互不干擾、不污染賽後驗證（不寫 prediction）。不改任何既有測試。"""
+from datetime import datetime, timedelta
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+import constants as C
+import sports_prediction as sp
+import data_manager as dm
+import prediction_engine as pe
+
+
+def _mk(gid, mins, now):
+    start = (now + timedelta(minutes=mins)).isoformat()
+    return {"id": gid, "sport": "MLB", "home": "H", "away": "A", "start_time": start,
+            "odds_h2h": [{"book": "x", "home": 1.8, "away": 2.1}],
+            "odds_totals": [{"book": "x", "line": 8.5}],
+            "odds_spreads": [{"book": "x", "home_point": -1.5}]}
+
+
+def test_early_window_boundaries():
+    now = datetime(2026, 6, 15, 12, 0, tzinfo=C.TW_TZ)
+    f = lambda m: sp.in_early_window(sp._parse_dt((now + timedelta(minutes=m)).isoformat()), now)
+    assert f(600) is True       # 10h → early
+    assert f(720) is True        # 12h 邊界（含）
+    assert f(721) is False       # > 12h
+    assert f(40) is False        # 40 分屬 final，不屬 early
+    assert f(30) is False        # final 窗
+
+
+def test_early_push_only_in_window_and_marks_early(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)  # 隔離 state 檔
+    now = datetime(2026, 6, 15, 12, 0, tzinfo=C.TW_TZ)
+    games = [_mk("G_early", 600, now), _mk("G_final", 30, now), _mk("G_far", 1000, now)]
+    pushed = sp.run_early_push(now, games, lambda g: True, predictor=pe.predict)
+    assert pushed == ["G_early"]
+    assert dm.is_pushed("G_early", "early") is True
+    # 不應動到 'pre'（與 final 路徑互不干擾）
+    assert dm.is_pushed("G_early", "pre") is False
+
+
+def test_early_push_idempotent(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    now = datetime(2026, 6, 15, 12, 0, tzinfo=C.TW_TZ)
+    games = [_mk("G1", 600, now)]
+    assert sp.run_early_push(now, games, lambda g: True, predictor=pe.predict) == ["G1"]
+    # 第二次同窗 → 已 mark 'early' → 不重推
+    assert sp.run_early_push(now, games, lambda g: True, predictor=pe.predict) == []
