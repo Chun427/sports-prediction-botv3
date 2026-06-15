@@ -24,6 +24,17 @@ def _winner(home_score: int, away_score: int) -> str:
     return "draw"
 
 
+def main_direction(prediction: dict) -> "str | None":
+    """主推方向＝單一真實來源（賽前 render 與賽後 verify 共用）。
+    MC argmax（model_mc.win_prob）優先；無 MC → 退回 best_pick.outcome；皆無 → None。
+    確保『賽前顯示什麼方向，賽後就驗什麼方向』，消除主推/驗證雙軌。"""
+    mc = (prediction.get("model_mc") or {}).get("win_prob") or {}
+    if mc:
+        return max(mc, key=mc.get)
+    bp = prediction.get("best_pick") or {}
+    return bp.get("outcome") if bp else None
+
+
 def verify(prediction: dict, result: dict) -> dict | None:
     """
     比對單場 prediction vs 賽果，回 verification record；尚不可驗 → None。
@@ -43,17 +54,24 @@ def verify(prediction: dict, result: dict) -> dict | None:
     fair = prediction.get("fair_prob", {}) or {}
     fair_prob_winner = float(fair.get(winner, 0.0))
 
-    best_pick = prediction.get("best_pick")
-    if best_pick:
-        pick_outcome = best_pick.get("outcome")
-        pick_hit = (pick_outcome == winner)
+    # 統一驗證鏈：驗『賽前主推顯示的方向』(main_direction)，不再驗 best_pick。
+    # pick_outcome / pick_hit 欄位沿用（語意＝主推方向命中），不需改 data_manager。
+    direction = main_direction(prediction)
+    if direction is not None:
+        pick_outcome = direction
+        pick_hit = (direction == winner)
         moneyline_hit = pick_hit
-        # EV 實現（下注 1 unit）：命中 → odds-1；未命中 → -1。
-        odds = best_pick.get("odds")
+        # 若以市場賠率投注此方向的實現報酬（命中→odds-1，未中→-1）；無賠率→None。
+        odds_map = prediction.get("best_odds") or {}
+        odds = odds_map.get(direction)
+        if odds is None:
+            bp = prediction.get("best_pick") or {}
+            if bp.get("outcome") == direction:
+                odds = bp.get("odds")
         if isinstance(odds, (int, float)):
             realized_return = (float(odds) - 1.0) if pick_hit else -1.0
         else:
-            realized_return = None  # odds 壞值 → 無法計
+            realized_return = None
     else:
         pick_outcome = None
         pick_hit = None
