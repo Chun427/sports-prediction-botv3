@@ -1,0 +1,44 @@
+"""V3.2：shadow_logger（影子評估 CSV）。驗證 predict/result 寫入、欄位、guarded 不拋。"""
+import sys, os, csv
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+import shadow_logger as sl
+
+
+def _rows(path):
+    with open(path, newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def test_log_prediction_writes_v1_dir_and_v3_pick(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    game = {"id": "G1", "sport": "FIFA",
+            "prediction": {"sport": "FIFA", "home": "Brazil", "away": "Morocco",
+                           "start_time": "2026-06-14T06:00:00+08:00",
+                           "model_mc": {"win_prob": {"home": 0.459, "draw": 0.263, "away": 0.278}},
+                           "best_pick": None, "edge": {"home": -0.13, "away": 0.11}}}
+    sl.log_prediction(game)
+    rows = _rows(tmp_path / "shadow_eval.csv")
+    assert len(rows) == 1
+    r = rows[0]
+    assert r["type"] == "predict"
+    assert r["match_id"] == "G1"
+    assert r["v1_direction"] == "home"        # MC argmax = home(Brazil)
+    assert r["v3_best_pick"] == "none"          # best_pick 空（未動）
+    assert r["actual_result"] == ""             # predict 列尚無結果
+
+
+def test_log_result_derives_winner(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    sl.log_result("G1", {"home_score": 2, "away_score": 0}, None, "FIFA")
+    r = _rows(tmp_path / "shadow_eval.csv")[0]
+    assert r["type"] == "result"
+    assert r["actual_result"] == "home"         # 2-0 → home win
+
+
+def test_guarded_never_raises(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    # 餵壞資料不得拋例外
+    sl.log_prediction({"id": None})
+    sl.log_result("X", {"home_score": "bad"}, None, "")
+    # 能跑到這裡就代表沒拋
+    assert True
