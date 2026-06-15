@@ -36,6 +36,8 @@ POOL_MAX_AGE_HOURS = 7
 # 決策3：退役 10 分鐘容錯。cron 改 */15 後 15 < 40，覆蓋已足夠。
 # 賽前唯一規則：0 <= (game_start - now) <= PREGAME_WINDOW_MIN 分鐘
 PREGAME_WINDOW_MIN = 40
+# 早期推播窗：賽前 12 小時（與 40 分最終窗互不重疊：early 觸發 40 < delta <= 720）
+EARLY_WINDOW_MIN = 720
 # 賽後：完賽後 <= POSTGAME_WINDOW_MIN 分鐘
 POSTGAME_WINDOW_MIN = 60
 
