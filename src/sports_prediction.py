@@ -34,6 +34,7 @@ from constants import (
     POOL_FETCH_HOURS_AHEAD,
     POOL_MAX_AGE_HOURS,
     PREGAME_WINDOW_MIN,
+    EARLY_WINDOW_MIN,
     REFRESH_HOURS_TW,
     TW_TZ,
     dry_run_enabled,
@@ -61,6 +62,13 @@ def in_pregame_window(game_start: datetime, now: datetime) -> bool:
     """賽前唯一規則：0 <= (game_start - now) <= PREGAME_WINDOW_MIN 分鐘。"""
     delta_min = (_parse_dt(game_start) - _parse_dt(now)).total_seconds() / 60.0
     return 0.0 <= delta_min <= PREGAME_WINDOW_MIN
+
+
+def in_early_window(game_start: datetime, now: datetime) -> bool:
+    """早期窗：PREGAME_WINDOW_MIN < (game_start - now) <= EARLY_WINDOW_MIN 分鐘。
+    嚴格 > 40，故與 40 分最終窗互不重疊（同一 tick 不會同時觸發 early 與 final）。"""
+    delta_min = (_parse_dt(game_start) - _parse_dt(now)).total_seconds() / 60.0
+    return PREGAME_WINDOW_MIN < delta_min <= EARLY_WINDOW_MIN
 
 
 # ── 2. 賽事池刷新判定 ─────────────────────────────────
@@ -205,6 +213,69 @@ def run_pregame_push(
     return pushed
 
 
+# ── 早期推播（V3.1 additive：賽前 12h，與 pre 完全獨立）──────
+def run_early_push(
+    now: datetime,
+    games: Iterable[dict],
+    pusher: Pusher,
+    predictor: Predictor | None = None,
+) -> list[str]:
+    """早期推播（賽前約 12 小時）。純 additive：不改 run_pregame_push、不改 renderer。
+    觸發：in_early_window（40 < delta <= 720）且該場未推過 phase 'early'。
+    idempotency：send → mark_pushed(gid,'early')；phase 'early' 與 'pre'/'post' 互不干擾。
+    重要：early 不呼叫 dm.save_prediction → 不進入賽後驗證池（postgame 只驗 40m 'pre' 預測）。
+    """
+    pushed: list[str] = []
+    games = list(games)
+    obs.info("early.scan", games_count=len(games), early_window_min=EARLY_WINDOW_MIN)
+    for g in games:
+        gid = str(g.get("id", "")).strip()
+        if not gid:
+            continue
+        try:
+            start = _parse_dt(g["start_time"])
+        except (KeyError, ValueError, TypeError) as exc:
+            obs.warn("early.skip_bad_start", game_id=gid, err=str(exc))
+            continue
+
+        delta_min = round((_parse_dt(start) - _parse_dt(now)).total_seconds() / 60.0, 1)
+        in_win = in_early_window(start, now)
+        obs.info("early.window_check", game_id=gid, delta_min=delta_min,
+                 in_window=in_win, early_window_min=EARLY_WINDOW_MIN)
+        if not in_win:
+            continue
+        if dm.is_pushed(gid, "early"):
+            obs.info("early.skip_already", game_id=gid)
+            continue
+
+        if predictor is not None:
+            pred = predictor(g)
+            if pred is None:
+                obs.info("early.skip_no_prediction", game_id=gid)
+                continue
+            _score = score_model.build_score_model(g)
+            _mc = monte_carlo_engine.run_monte_carlo(_score)
+            pred = {**pred, "model_score": _score, "model_mc": _mc}
+            if not pred.get("best_pick") and not _score:
+                obs.info("early.skip_no_actionable", game_id=gid)
+                continue
+            g = {**g, "prediction": pred}
+
+        try:
+            ok = pusher(g)
+        except Exception as exc:  # noqa: BLE001 — 推播失敗不可崩
+            obs.error("early.push_failed", game_id=gid, err=str(exc))
+            continue
+
+        if ok:
+            dm.mark_pushed(gid, "early")  # send → mark（刻意不存 prediction，保護賽後驗證）
+            pushed.append(gid)
+            obs.info("early.sent", game_id=gid)
+        else:
+            obs.warn("early.not_sent", game_id=gid)
+    return pushed
+
+
 # ── 賽後驗證（C-4，與 pre 路徑獨立 fail-safe）────────
 def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
                         post_pusher: PostPusher, verifier=None) -> list[str]:
@@ -273,7 +344,8 @@ def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
 def tick(now: datetime, fetcher: Fetcher, pusher: Pusher,
          predictor: Predictor | None = None, *,
          scores_fetcher: ScoresFetcher | None = None,
-         post_pusher: PostPusher | None = None) -> list[str]:
+         post_pusher: PostPusher | None = None,
+         early_pusher: Pusher | None = None) -> list[str]:
     """
     確保賽事池 → 賽前推播 →（若配置）賽後驗證。回傳本輪賽前推播的 game_id。
 
@@ -287,6 +359,9 @@ def tick(now: datetime, fetcher: Fetcher, pusher: Pusher,
         obs.error("tick.skip_all_keys_unavailable", err=str(exc))
         games = None
     pushed = run_pregame_push(now, games, pusher, predictor=predictor) if games is not None else []
+
+    if early_pusher is not None and games is not None:
+        run_early_push(now, games, early_pusher, predictor=predictor)
 
     if scores_fetcher is not None and post_pusher is not None:
         run_postgame_verify(now, scores_fetcher, post_pusher)
@@ -337,9 +412,11 @@ def main(argv: list[str] | None = None) -> int:
 
     tg = {"token": os.getenv(ENV_TG_TOKEN), "chat": os.getenv(ENV_TG_CHAT)}
     pusher = notifier.make_pusher(dry_run, renderer=notifier.render_pregame_lite, **tg)
+    early_pusher = notifier.make_pusher(dry_run, renderer=notifier.render_pregame_early, **tg)
     post_pusher = notifier.make_postgame_pusher(dry_run, **tg)
     pushed = tick(now, fetcher, pusher, predictor=prediction_engine.predict,
-                  scores_fetcher=scores_fetcher, post_pusher=post_pusher)
+                  scores_fetcher=scores_fetcher, post_pusher=post_pusher,
+                  early_pusher=early_pusher)
     obs.info("runtime.tick_done", pushed=len(pushed), dry_run=dry_run)
     return 0
 
