@@ -1,5 +1,5 @@
-"""V3.1 additive：台灣運彩「模型方向」行（V1-style MC argmax）。
-驗證：argmax 正確、NBA 無假和局、env 可關、不動 best_pick/Kelly。"""
+"""V3.2：台灣運彩主推採 V1 風格（MC argmax → 獨贏方向）+ 📈 勝率排序。
+驗證：主推方向、排序、NBA 無假和局、env 可關回退 best_pick、不動 best_pick/Kelly。"""
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import notifier as nf
@@ -10,29 +10,43 @@ NBA = {"sport": "NBA", "home": "Lakers", "away": "Celtics",
        "model_mc": {"win_prob": {"home": 0.62, "away": 0.38}}}
 
 
-def test_direction_argmax_fifa(monkeypatch):
+def test_main_pick_v1_style_fifa(monkeypatch):
     monkeypatch.setenv("USE_V1_DECISION", "true")
     out = nf.render_pregame_lite(FIFA)
-    assert "🧭【模型方向】Brazil 主勝（MC 45.9%）" in out
-    assert "非 +EV 投注建議" in out  # 誠實標註存在
+    assert "🔮【主推】獨贏盤 → Brazil 勝出" in out      # MC argmax = Brazil
 
 
-def test_direction_nba_no_fake_draw(monkeypatch):
+def test_ranking_block_fifa(monkeypatch):
+    monkeypatch.setenv("USE_V1_DECISION", "true")
+    out = nf.render_pregame_lite(FIFA)
+    assert "📈 勝率排序" in out
+    assert "1️⃣ Brazil 主勝 45.9%" in out
+    assert "2️⃣ Morocco 客勝 27.8%" in out
+    assert "3️⃣ 和局 26.3%" in out
+    assert "非 +EV 投注建議" in out
+
+
+def test_main_pick_v1_style_nba(monkeypatch):
     monkeypatch.setenv("USE_V1_DECISION", "true")
     out = nf.render_pregame_lite(NBA)
-    assert "🧭【模型方向】Lakers 主勝（MC 62.0%）" in out
-    assert "和局" not in out.split("🧭【模型方向】")[1].splitlines()[0]  # 方向行不得出現和局
+    assert "🔮【主推】獨贏盤 → Lakers 勝出" in out
+    assert "1️⃣ Lakers 主勝 62.0%" in out
+    assert "2️⃣ Celtics 客勝 38.0%" in out
+    assert "3️⃣" not in out      # NBA 兩項，無第三名
+    assert "和局" not in out      # 不補假和局
 
 
-def test_direction_switch_off(monkeypatch):
+def test_switch_off_falls_back_to_best_pick(monkeypatch):
+    # 關閉 V1 模式 → 主推回到 V3 best_pick 行為（此處 best_pick 空 → N/A）
     monkeypatch.setenv("USE_V1_DECISION", "false")
     out = nf.render_pregame_lite(FIFA)
-    assert "🧭【模型方向】N/A" in out
+    assert "🔮【主推】N/A" in out
+    assert "獨贏盤 →" not in out      # V1 風格主推不出現
+    assert "📈 勝率排序\nN/A" in out
 
 
 def test_best_pick_and_kelly_untouched(monkeypatch):
-    # 無 best_pick → 主推仍 N/A；模型方向不影響主推/Kelly
     monkeypatch.setenv("USE_V1_DECISION", "true")
     out = nf.render_pregame_lite(FIFA)
-    assert "🔮【主推】N/A" in out          # best_pick 為空 → 主推 N/A（誠實，未被方向覆蓋）
+    # Kelly 仍誠實（best_pick 空、edge≤0 → 0%），未被主推方向影響
     assert "📊 風控資訊" in out and "Kelly：" in out
