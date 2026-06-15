@@ -26,6 +26,7 @@ import notifier
 import obs
 import result_verifier
 import score_model
+import shadow_logger
 from constants import (
     ENV_ODDS_API_KEY_1,
     ENV_TG_CHAT,
@@ -206,6 +207,7 @@ def run_pregame_push(
             # DRY_RUN 也存：在真實送出前即開始累積 truth-loop 對照資料。
             if "prediction" in g:
                 dm.save_prediction(gid, g["prediction"])
+            shadow_logger.log_prediction(g)  # V3.2 影子記錄（內部 guarded，不影響推播）
             pushed.append(gid)
             obs.info("push.sent", game_id=gid)
         else:
@@ -335,6 +337,7 @@ def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
                 dm.mark_pushed(gid, "post")  # send → mark（idempotent）
                 dm.append_verified({**v, "sport": sport})
                 dm.remove_prediction(gid)
+                shadow_logger.log_result(gid, r, v, sport)  # V3.2 影子結果（guarded）
                 verified.append(gid)
                 obs.info("postgame.verified", game_id=gid)
     return verified
