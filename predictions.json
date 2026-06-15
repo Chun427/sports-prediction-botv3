@@ -1,1 +1,112 @@
-{}
+{
+  "64b91c5f2db61c7358a4f05459e83c52": {
+    "prediction": {
+      "game_id": "64b91c5f2db61c7358a4f05459e83c52",
+      "sport": "FIFA",
+      "home": "Saudi Arabia",
+      "away": "Uruguay",
+      "start_time": "2026-06-16T06:00:00+08:00",
+      "market": "h2h",
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "draw": 0.2233,
+        "home": 0.1204,
+        "away": 0.6563
+      },
+      "best_odds": {
+        "home": 8.6,
+        "away": 1.48,
+        "draw": 4.43
+      },
+      "edge": {
+        "draw": -0.0107,
+        "home": 0.0354,
+        "away": -0.0287
+      },
+      "best_pick": {
+        "outcome": "home",
+        "edge": 0.0354,
+        "odds": 8.6
+      },
+      "avg_overround": 0.0487,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-16T05:30:21+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 0.75,
+        "lambda_away": 1.75,
+        "expected_total": 2.5,
+        "supremacy": -1.0,
+        "outcome_probs": {
+          "home": 0.1564,
+          "draw": 0.2308,
+          "away": 0.6128
+        },
+        "top_scorelines": [
+          {
+            "home": 0,
+            "away": 1,
+            "prob": 0.1436
+          },
+          {
+            "home": 0,
+            "away": 2,
+            "prob": 0.1257
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1077
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "prob": 0.0943
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "prob": 0.0821
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.1572,
+          "draw": 0.2359,
+          "away": 0.6069
+        },
+        "top_scorelines": [
+          {
+            "home": 0,
+            "away": 1,
+            "prob": 0.1439
+          },
+          {
+            "home": 0,
+            "away": 2,
+            "prob": 0.1249
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1111
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "prob": 0.0906
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "prob": 0.083
+          }
+        ]
+      }
+    },
+    "pre_pushed_at": "2026-06-16T05:30:22+08:00"
+  }
+}
