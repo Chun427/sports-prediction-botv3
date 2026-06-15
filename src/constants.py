@@ -90,6 +90,16 @@ def dry_run_enabled() -> bool:
     """DRY_RUN 分流：預設安全（未設定 → True，不送 Telegram）。"""
     return os.getenv(ENV_DRY_RUN, "true").strip().lower() not in ("0", "false", "no")
 
+
+ENV_USE_V1_DECISION = "USE_V1_DECISION"
+
+
+def use_v1_decision() -> bool:
+    """V1 模式開關：是否顯示「模型方向」（MC argmax 提示）。預設開啟；
+    設為 0/false/no 可即時關閉（無需改 code）。僅影響顯示，
+    不改 predictor / best_pick / Kelly / 風控。"""
+    return os.getenv(ENV_USE_V1_DECISION, "true").strip().lower() not in ("0", "false", "no")
+
 # ── 環境變數名稱 ──────────────────────────────────────
 # 決策4：移除單把 ODDS_API_KEY，改為 Key Pool（不留相容層）。
 ENV_ODDS_API_KEY_1 = "ODDS_API_KEY_1"
