@@ -225,7 +225,8 @@ def run_early_push(
     """早期推播（賽前約 12 小時）。純 additive：不改 run_pregame_push、不改 renderer。
     觸發：in_early_window（40 < delta <= 720）且該場未推過 phase 'early'。
     idempotency：send → mark_pushed(gid,'early')；phase 'early' 與 'pre'/'post' 互不干擾。
-    重要：early 不呼叫 dm.save_prediction → 不進入賽後驗證池（postgame 只驗 40m 'pre' 預測）。
+    V3.1-fix：early 推播成功後也 dm.save_prediction → 進入賽後驗證池（fallback）；
+    若稍後 40m 'pre' 有跑會覆寫成更近賽的快照。解決「40m 窗漏 → 賽後無素材」。
     """
     pushed: list[str] = []
     games = list(games)
@@ -270,7 +271,11 @@ def run_early_push(
             continue
 
         if ok:
-            dm.mark_pushed(gid, "early")  # send → mark（刻意不存 prediction，保護賽後驗證）
+            dm.mark_pushed(gid, "early")  # send → mark
+            # V3.1-fix：early 也落盤 snapshot → 賽後驗證不再依賴 40m 窗命中。
+            # idempotent：之後 40m final push 若有跑，會用更新（更近賽）的快照覆寫同一 game_id。
+            if "prediction" in g:
+                dm.save_prediction(gid, g["prediction"])
             pushed.append(gid)
             obs.info("early.sent", game_id=gid)
         else:
