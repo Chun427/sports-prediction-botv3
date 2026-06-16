@@ -1,26 +1,20 @@
 name: bot-runtime
 
-# ── RUNTIME ONLY：每 15 分鐘執行 dry-run pipeline（log-only）──
-# 與 ci.yml 完全分離：本檔不跑 pytest，只跑 runtime tick 並 commit-back 狀態。
 on:
   schedule:
-    # 每 15 分鐘（GitHub cron 採 UTC；bot 時間窗邏輯內部自行轉 TW）。
-    # 15 < 賽前窗 40 分 → 任一場的賽前窗必含 ≥2 個 tick，避免漏窗。
-    - cron: "*/15 * * * *"
-  workflow_dispatch: {}       # 手動觸發：debug / replay runtime
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
 
-# commit-back 需要寫入權限
 permissions:
   contents: write
 
-# 不取消進行中的 run，避免 commit-back 寫到一半被中斷
 concurrency:
-  group: bot-runtime
+  group: bot-runtime-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   run:
-    name: runtime tick (dry-run push)
+    name: runtime tick (push)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
