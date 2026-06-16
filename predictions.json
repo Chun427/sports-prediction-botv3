@@ -1,107 +1,4 @@
 {
-  "6dc67dec6b0c9f4a591f05d0f5912d23": {
-    "prediction": {
-      "game_id": "6dc67dec6b0c9f4a591f05d0f5912d23",
-      "sport": "MLB",
-      "home": "St. Louis Cardinals",
-      "away": "San Diego Padres",
-      "start_time": "2026-06-16T07:46:00+08:00",
-      "market": "h2h",
-      "bookmaker_count": 9,
-      "fair_prob": {
-        "home": 0.5926,
-        "away": 0.4074
-      },
-      "best_odds": {
-        "home": 1.66,
-        "away": 2.45
-      },
-      "edge": {
-        "home": -0.0162,
-        "away": -0.0019
-      },
-      "best_pick": null,
-      "avg_overround": 0.039,
-      "model": "market_implied_v1",
-      "generated_at": "2026-06-16T07:17:04+08:00",
-      "model_score": {
-        "type": "poisson",
-        "sport": "MLB",
-        "lambda_home": 5.0,
-        "lambda_away": 3.5,
-        "expected_total": 8.5,
-        "supremacy": 1.5,
-        "outcome_probs": {
-          "home": 0.6325,
-          "draw": 0.1229,
-          "away": 0.2446
-        },
-        "top_scorelines": [
-          {
-            "home": 4,
-            "away": 3,
-            "prob": 0.0379
-          },
-          {
-            "home": 5,
-            "away": 3,
-            "prob": 0.0379
-          },
-          {
-            "home": 4,
-            "away": 4,
-            "prob": 0.0332
-          },
-          {
-            "home": 5,
-            "away": 4,
-            "prob": 0.0332
-          },
-          {
-            "home": 4,
-            "away": 2,
-            "prob": 0.0325
-          }
-        ]
-      },
-      "model_mc": {
-        "n": 20000,
-        "win_prob": {
-          "home": 0.634,
-          "draw": 0.122,
-          "away": 0.244
-        },
-        "top_scorelines": [
-          {
-            "home": 4,
-            "away": 3,
-            "prob": 0.0396
-          },
-          {
-            "home": 5,
-            "away": 3,
-            "prob": 0.036
-          },
-          {
-            "home": 5,
-            "away": 4,
-            "prob": 0.0338
-          },
-          {
-            "home": 4,
-            "away": 2,
-            "prob": 0.0332
-          },
-          {
-            "home": 5,
-            "away": 2,
-            "prob": 0.032
-          }
-        ]
-      }
-    },
-    "pre_pushed_at": "2026-06-16T07:17:05+08:00"
-  },
   "9c2784938a40031b48e75139185e2491": {
     "prediction": {
       "game_id": "9c2784938a40031b48e75139185e2491",
@@ -516,5 +413,108 @@
       }
     },
     "pre_pushed_at": "2026-06-16T08:33:12+08:00"
+  },
+  "da125dfa2d7fe97d5836e50dd394db59": {
+    "prediction": {
+      "game_id": "da125dfa2d7fe97d5836e50dd394db59",
+      "sport": "MLB",
+      "home": "Los Angeles Dodgers",
+      "away": "Tampa Bay Rays",
+      "start_time": "2026-06-16T10:11:00+08:00",
+      "market": "h2h",
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "away": 0.3801,
+        "home": 0.6199
+      },
+      "best_odds": {
+        "home": 1.57,
+        "away": 2.58
+      },
+      "edge": {
+        "away": -0.0193,
+        "home": -0.0268
+      },
+      "best_pick": null,
+      "avg_overround": 0.0387,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-16T10:06:06+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "MLB",
+        "lambda_home": 5.5,
+        "lambda_away": 4.0,
+        "expected_total": 9.5,
+        "supremacy": 1.5,
+        "outcome_probs": {
+          "home": 0.6248,
+          "draw": 0.1178,
+          "away": 0.2574
+        },
+        "top_scorelines": [
+          {
+            "home": 5,
+            "away": 3,
+            "prob": 0.0336
+          },
+          {
+            "home": 5,
+            "away": 4,
+            "prob": 0.0336
+          },
+          {
+            "home": 6,
+            "away": 3,
+            "prob": 0.0308
+          },
+          {
+            "home": 6,
+            "away": 4,
+            "prob": 0.0308
+          },
+          {
+            "home": 4,
+            "away": 3,
+            "prob": 0.0306
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.6254,
+          "draw": 0.1168,
+          "away": 0.2578
+        },
+        "top_scorelines": [
+          {
+            "home": 5,
+            "away": 4,
+            "prob": 0.0354
+          },
+          {
+            "home": 5,
+            "away": 3,
+            "prob": 0.0337
+          },
+          {
+            "home": 6,
+            "away": 3,
+            "prob": 0.033
+          },
+          {
+            "home": 6,
+            "away": 4,
+            "prob": 0.0316
+          },
+          {
+            "home": 4,
+            "away": 3,
+            "prob": 0.0305
+          }
+        ]
+      }
+    },
+    "pre_pushed_at": "2026-06-16T10:06:07+08:00"
   }
 }
