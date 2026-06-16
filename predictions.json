@@ -1,105 +1,112 @@
 {
-  "da125dfa2d7fe97d5836e50dd394db59": {
+  "73a4fcd14cc9766b9b9bfd50b8ca153a": {
     "prediction": {
-      "game_id": "da125dfa2d7fe97d5836e50dd394db59",
-      "sport": "MLB",
-      "home": "Los Angeles Dodgers",
-      "away": "Tampa Bay Rays",
-      "start_time": "2026-06-16T10:11:00+08:00",
+      "game_id": "73a4fcd14cc9766b9b9bfd50b8ca153a",
+      "sport": "FIFA",
+      "home": "France",
+      "away": "Senegal",
+      "start_time": "2026-06-17T03:00:00+08:00",
       "market": "h2h",
       "bookmaker_count": 9,
       "fair_prob": {
-        "away": 0.3801,
-        "home": 0.6199
+        "home": 0.6502,
+        "away": 0.1356,
+        "draw": 0.2142
       },
       "best_odds": {
-        "home": 1.57,
-        "away": 2.58
+        "home": 1.49,
+        "away": 7.5,
+        "draw": 4.57
       },
       "edge": {
-        "away": -0.0193,
-        "home": -0.0268
+        "home": -0.0312,
+        "away": 0.017,
+        "draw": -0.0212
       },
-      "best_pick": null,
-      "avg_overround": 0.0387,
+      "best_pick": {
+        "outcome": "away",
+        "edge": 0.017,
+        "odds": 7.5
+      },
+      "avg_overround": 0.0474,
       "model": "market_implied_v1",
-      "generated_at": "2026-06-16T10:06:06+08:00",
+      "generated_at": "2026-06-16T15:42:29+08:00",
       "model_score": {
         "type": "poisson",
-        "sport": "MLB",
-        "lambda_home": 5.5,
-        "lambda_away": 4.0,
-        "expected_total": 9.5,
-        "supremacy": 1.5,
+        "sport": "FIFA",
+        "lambda_home": 1.75,
+        "lambda_away": 0.75,
+        "expected_total": 2.5,
+        "supremacy": 1.0,
         "outcome_probs": {
-          "home": 0.6248,
-          "draw": 0.1178,
-          "away": 0.2574
+          "home": 0.6128,
+          "draw": 0.2308,
+          "away": 0.1564
         },
         "top_scorelines": [
           {
-            "home": 5,
-            "away": 3,
-            "prob": 0.0336
+            "home": 1,
+            "away": 0,
+            "prob": 0.1436
           },
           {
-            "home": 5,
-            "away": 4,
-            "prob": 0.0336
+            "home": 2,
+            "away": 0,
+            "prob": 0.1257
           },
           {
-            "home": 6,
-            "away": 3,
-            "prob": 0.0308
+            "home": 1,
+            "away": 1,
+            "prob": 0.1077
           },
           {
-            "home": 6,
-            "away": 4,
-            "prob": 0.0308
+            "home": 2,
+            "away": 1,
+            "prob": 0.0943
           },
           {
-            "home": 4,
-            "away": 3,
-            "prob": 0.0306
+            "home": 0,
+            "away": 0,
+            "prob": 0.0821
           }
         ]
       },
       "model_mc": {
         "n": 20000,
         "win_prob": {
-          "home": 0.6254,
-          "draw": 0.1168,
-          "away": 0.2578
+          "home": 0.611,
+          "draw": 0.2322,
+          "away": 0.1568
         },
         "top_scorelines": [
           {
-            "home": 5,
-            "away": 4,
-            "prob": 0.0354
+            "home": 1,
+            "away": 0,
+            "prob": 0.1404
           },
           {
-            "home": 5,
-            "away": 3,
-            "prob": 0.0337
+            "home": 2,
+            "away": 0,
+            "prob": 0.1262
           },
           {
-            "home": 6,
-            "away": 3,
-            "prob": 0.033
+            "home": 1,
+            "away": 1,
+            "prob": 0.109
           },
           {
-            "home": 6,
-            "away": 4,
-            "prob": 0.0316
+            "home": 2,
+            "away": 1,
+            "prob": 0.0938
           },
           {
-            "home": 4,
-            "away": 3,
-            "prob": 0.0305
+            "home": 0,
+            "away": 0,
+            "prob": 0.0842
           }
         ]
       }
     },
-    "pre_pushed_at": "2026-06-16T10:06:07+08:00"
+    "pre_pushed_at": "2026-06-16T15:42:30+08:00"
   }
 }
