@@ -37,7 +37,8 @@ def _log_post():
 
 
 # ── render_postgame 契約 ─────────────────────────────
-def test_render_postgame_hit():
+def test_render_postgame_hit(monkeypatch):
+    monkeypatch.setattr(notifier._dm, "read_verified", lambda: [])  # 隔離歷史→只計本場
     v = {"game_id": "g1", "winner": "home", "pick_outcome": "home", "pick_hit": True,
          "moneyline_hit": True, "realized_return": 0.85, "fair_prob_winner": 0.56,
          "model": "market_implied_v1"}
@@ -52,7 +53,8 @@ def test_render_postgame_hit():
     assert "📌 預測模式：量化分析" in msg
 
 
-def test_render_postgame_no_pick():
+def test_render_postgame_no_pick(monkeypatch):
+    monkeypatch.setattr(notifier._dm, "read_verified", lambda: [])  # 隔離歷史
     v = {"game_id": "g1", "winner": "away", "pick_outcome": None, "pick_hit": None,
          "moneyline_hit": None, "realized_return": None, "fair_prob_winner": 0.44,
          "model": "m"}
