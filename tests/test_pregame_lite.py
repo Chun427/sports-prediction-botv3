@@ -35,8 +35,7 @@ def test_all_fixed_sections_present():
     out = nf.render_pregame_lite(PRED_2WAY)
     for header in [
         "🎯 精算師預測系統", "⚡ 量化預測模型", "📐 去Vig真實勝率", "蒙特卡羅模擬勝率",
-        "🏆 最可能出現的比分", "📊 盤口深度分析",
-        "讓分盤口", "總分大小", "獨贏賠率", "💰 台灣運彩實戰建議",
+        "🏆 最可能出現的比分", "💰 台灣運彩實戰建議",
         "🔮【主推】", "💎【次要】", "⭐【備選】",
         "📡 數據來源：AI模型+真實數據+賠率", "⚠️ 請理性投注。",
     ]:
@@ -55,9 +54,10 @@ def test_edge_not_displayed():
     assert "📊 Edge" not in out and "模型優勢" not in out
 
 
-def test_odds_real_values():
+def test_handicap_block_removed():
     out = nf.render_pregame_lite(PRED_2WAY)
-    assert "Tigers:2.1" in out and "Mariners:1.8" in out
+    assert "📊 盤口深度分析" not in out
+    assert "獨贏賠率" not in out
 
 
 def test_missing_model_shows_na_not_fabricated():
@@ -65,8 +65,7 @@ def test_missing_model_shows_na_not_fabricated():
     assert "蒙特卡羅模擬勝率" in out
     assert "Tigers  N/A" in out and "Mariners  N/A" in out
     assert "🥇 N/A" in out
-    assert "讓分盤口     N/A" in out
-    assert "總分大小     N/A" in out
+    assert "📊 盤口深度分析" not in out
 
 
 def test_best_pick_main_real():
