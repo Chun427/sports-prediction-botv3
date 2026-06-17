@@ -959,5 +959,113 @@
       }
     },
     "pre_pushed_at": "2026-06-17T17:19:00+08:00"
+  },
+  "c8afc0ecd9f70b910f3f7ffbf71274e4": {
+    "prediction": {
+      "game_id": "c8afc0ecd9f70b910f3f7ffbf71274e4",
+      "sport": "MLB",
+      "home": "St. Louis Cardinals",
+      "away": "San Diego Padres",
+      "start_time": "2026-06-18T02:16:00+08:00",
+      "market": {
+        "asian_handicap": 1.5,
+        "over_under": 10.5,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-17T10:00:35.572113+00:00"
+      },
+      "bookmaker_count": 3,
+      "fair_prob": {
+        "away": 0.4748,
+        "home": 0.5252
+      },
+      "best_odds": {
+        "home": 1.83,
+        "away": 2.02
+      },
+      "edge": {
+        "away": -0.0409,
+        "home": -0.0388
+      },
+      "best_pick": null,
+      "avg_overround": 0.0462,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-17T18:00:34+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "MLB",
+        "lambda_home": 4.5,
+        "lambda_away": 6.0,
+        "expected_total": 10.5,
+        "supremacy": -1.5,
+        "outcome_probs": {
+          "home": 0.2688,
+          "draw": 0.1136,
+          "away": 0.6175
+        },
+        "top_scorelines": [
+          {
+            "home": 4,
+            "away": 5,
+            "prob": 0.0308
+          },
+          {
+            "home": 4,
+            "away": 6,
+            "prob": 0.0308
+          },
+          {
+            "home": 5,
+            "away": 5,
+            "prob": 0.0277
+          },
+          {
+            "home": 5,
+            "away": 6,
+            "prob": 0.0277
+          },
+          {
+            "home": 3,
+            "away": 5,
+            "prob": 0.0274
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.2678,
+          "draw": 0.1118,
+          "away": 0.6204
+        },
+        "top_scorelines": [
+          {
+            "home": 4,
+            "away": 6,
+            "prob": 0.0323
+          },
+          {
+            "home": 4,
+            "away": 5,
+            "prob": 0.0308
+          },
+          {
+            "home": 3,
+            "away": 6,
+            "prob": 0.0301
+          },
+          {
+            "home": 5,
+            "away": 6,
+            "prob": 0.0285
+          },
+          {
+            "home": 5,
+            "away": 5,
+            "prob": 0.0284
+          }
+        ]
+      }
+    },
+    "pre_pushed_at": "2026-06-17T18:00:35+08:00"
   }
 }
