@@ -188,7 +188,7 @@ def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> 
             sh, sa = s.get("home"), s.get("away")
             ok = (sh == hs and sa == aws)
             n_hit += 1 if ok else 0
-            out.append(f"{medals[i]} {home} {sh}–{sa} {away} {'✅' if ok else '❌'}")
+            out.append(f"{medals[i]} {away} {sa}–{sh} {home} {'✅' if ok else '❌'}")
         out.append(f"👉 命中：{n_hit} / {len(sl)}")
         score_hit_line = f"比分命中：{n_hit}/{len(sl)}"
 
@@ -489,7 +489,7 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     for i in range(5):
         if i < len(tops):
             s = tops[i]
-            out.append(f"{medals[i]} {home} {s['home']}–{s['away']} {away}（{s['prob'] * 100:.1f}%）")
+            out.append(f"{medals[i]} {away} {s['away']}–{s['home']} {home}（{s['prob'] * 100:.1f}%）")
         else:
             out.append(f"{medals[i]} N/A")
 
