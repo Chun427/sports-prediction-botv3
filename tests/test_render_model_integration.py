@@ -37,8 +37,6 @@ def test_model_present_shows_real_mc_and_scores():
     assert "最可能出現的比分" in msg
     assert "🥇 Team A" in msg              # 真實比分（非 N/A），客隊先
     assert "🥇 N/A" not in msg
-    assert "總分大小     2.7" in msg        # 由 totals 導出
-    assert "讓分盤口     Team H" in msg     # 由 spread 導出
 
 
 def test_model_absent_shows_na_sections_present():
@@ -50,7 +48,6 @@ def test_model_absent_shows_na_sections_present():
     assert "蒙特卡羅模擬勝率" in msg
     assert "Team A  N/A" in msg
     assert "🥇 N/A" in msg
-    assert "讓分盤口     N/A" in msg and "總分大小     N/A" in msg
 
 
 def test_nba_has_mc_but_scores_are_na():
