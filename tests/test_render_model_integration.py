@@ -35,7 +35,7 @@ def test_model_present_shows_real_mc_and_scores():
     msg = notifier.render_pregame_lite(pred)
     assert "蒙特卡羅模擬勝率" in msg
     assert "最可能出現的比分" in msg
-    assert "🥇 Team H" in msg              # 真實比分（非 N/A）
+    assert "🥇 Team A" in msg              # 真實比分（非 N/A），客隊先
     assert "🥇 N/A" not in msg
     assert "總分大小     2.7" in msg        # 由 totals 導出
     assert "讓分盤口     Team H" in msg     # 由 spread 導出
