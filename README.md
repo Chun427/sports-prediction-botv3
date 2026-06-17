@@ -12,7 +12,7 @@
 
 -----
 
-## 📱 推播畫面（全部）
+## 📱 推播畫面
 
 ### ① 賽前 40 分鐘（最終投注參考）
 
@@ -36,11 +36,11 @@ Detroit Tigers -2.5%
 Houston Astros -2.3%
 ━━━━━━━━━━━━━━━━
 🏆 最可能出現的比分
-🥇 Houston Astros 4–3 Detroit Tigers（3.8%）
-🥈 Houston Astros 5–3 Detroit Tigers（3.8%）
-🥉 Houston Astros 4–4 Detroit Tigers（3.3%）
-4️⃣ Houston Astros 5–4 Detroit Tigers（3.3%）
-5️⃣ Houston Astros 4–2 Detroit Tigers（3.2%）
+🥇 Detroit Tigers 3–4 Houston Astros（3.8%）
+🥈 Detroit Tigers 3–5 Houston Astros（3.8%）
+🥉 Detroit Tigers 4–4 Houston Astros（3.3%）
+4️⃣ Detroit Tigers 4–5 Houston Astros（3.3%）
+5️⃣ Detroit Tigers 2–4 Houston Astros（3.2%）
 ━━━━━━━━━━━━━━━━
 📊 盤口深度分析
 讓分盤口     Houston Astros -1.5
