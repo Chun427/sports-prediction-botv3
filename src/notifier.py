@@ -463,6 +463,17 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     _title2 = ("🕐 量化預測模型（賽前 12小時預測）" if header_kind == "early"
                else f"⚡ 量化預測模型（賽前 {PREGAME_WINDOW_MIN} 分鐘）")
 
+    # 勝率列：FIFA 三路（客／平手／主）；MLB/NBA 兩路（客／主），不顯示和局。
+    # 維持全畫面「客隊先」一致；純顯示，不碰任何機率計算。
+    is_fifa = str(sport).upper() == "FIFA"
+
+    def _wp_rows(probs):
+        rows = [_wp(away, probs.get("away"))]
+        if is_fifa:
+            rows.append(_wp("平手", probs.get("draw")))
+        rows.append(_wp(home, probs.get("home")))
+        return rows
+
     out = [
         "🎯 精算師預測系統",
         _title2,
@@ -472,11 +483,9 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         f"{away} 🆚 {home}",
         _DREAM_DIV,
         "📐 去Vig真實勝率",
-        _wp(away, fp.get("away")),
-        _wp(home, fp.get("home")),
+        *_wp_rows(fp),
         "蒙特卡羅模擬勝率",
-        _wp(away, mc.get("away")),
-        _wp(home, mc.get("home")),
+        *_wp_rows(mc),
         _DREAM_DIV,
         "🏆 最可能出現的比分",
     ]
@@ -527,12 +536,6 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         out += [_DREAM_DIV] + _tg
 
     out += [
-        _DREAM_DIV, "📊 盤口深度分析",
-        f"讓分盤口     {spread_label}",
-        f"總分大小     {total_label}",
-        "獨贏賠率",
-        f"{away}:{_od(odds.get('away'))}",
-        f"{home}:{_od(odds.get('home'))}",
         _DREAM_DIV, "💰 台灣運彩實戰建議",
         f"🔮【主推】{main}",
         f"💎【次要】{ou_pick}",
