@@ -463,15 +463,15 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     _title2 = ("🕐 量化預測模型（賽前 12小時預測）" if header_kind == "early"
                else f"⚡ 量化預測模型（賽前 {PREGAME_WINDOW_MIN} 分鐘）")
 
-    # 勝率列：FIFA 三路（客／平手／主）；MLB/NBA 兩路（客／主），不顯示和局。
-    # 維持全畫面「客隊先」一致；純顯示，不碰任何機率計算。
+    # 勝率列：FIFA 三路（主勝／平手／客勝）；MLB/NBA 兩路（主勝／客勝），不顯示和局。
+    # 依監督者指定順序＝主先（與標題/比分列的客先順序不同）；純顯示，不碰任何機率計算。
     is_fifa = str(sport).upper() == "FIFA"
 
     def _wp_rows(probs):
-        rows = [_wp(away, probs.get("away"))]
+        rows = [_wp(home, probs.get("home"))]
         if is_fifa:
             rows.append(_wp("平手", probs.get("draw")))
-        rows.append(_wp(home, probs.get("home")))
+        rows.append(_wp(away, probs.get("away")))
         return rows
 
     out = [
