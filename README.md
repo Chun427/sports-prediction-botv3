@@ -1,177 +1,222 @@
-# 🎯 Sports Prediction Bot V3 — RC
+# 🎯全自動體育賽事預測系統sports-prediction-bot
 
-> 以 GitHub Actions 為 runtime、repo 當資料庫、賽前/賽後自動推播到 Telegram 的量化賽事預測系統。
-> 狀態：**Release Candidate**（核心完成，待 scheduler 上線 + 一天驗收 → Production Ready）。
+全自動體育賽事預測機器人。透過 GitHub Actions 定期（每 5 分鐘）自動執行：建立賽事池 → 統計／機率模型預測（去Vig + Poisson/常態 + 蒙特卡羅）→ 推播 Telegram → 賽後逐場驗證命中 → 累積賽後驗證紀錄（verified_history）。
 
-支援：⚾ MLB · 🏀 NBA · ⚽ FIFA ｜ Tests: **171 passed**
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-自動排程-2088FF?logo=github-actions&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white)
+
+> 狀態：**Release Candidate**（核心完成；overlay bundle 待合併 + scheduler 待上線 → Production Ready）。測試 **178 passed**。
+> 支援：⚾ MLB · 🏀 NBA · ⚽ FIFA。
+> 註：`xgboost` 列於 requirements 但**目前未啟用**（保留為未來擴充），現行預測不依賴它。
 
 -----
 
-## 架構總覽
+## 📱 推播畫面（全部）
+
+### ① 賽前 40 分鐘（最終投注參考）
+
+```
+🎯 精算師預測系統
+⚡ 量化預測模型（賽前 40 分鐘）
+━━━━━━━━━━━━━━━━
+📅 台灣時間 06/17 08:11
+⚾ MLB
+Detroit Tigers 🆚 Houston Astros
+━━━━━━━━━━━━━━━━
+📐 去Vig真實勝率
+Detroit Tigers  ████░░░░░░  39.3%
+Houston Astros  ██████░░░░  60.7%
+蒙特卡羅模擬勝率
+Detroit Tigers  ██░░░░░░░░  24.4%
+Houston Astros  ██████░░░░  63.1%
+━━━━━━━━━━━━━━━━
+📊 Edge（模型優勢）
+Detroit Tigers -2.5%
+Houston Astros -2.3%
+━━━━━━━━━━━━━━━━
+🏆 最可能出現的比分
+🥇 Houston Astros 4–3 Detroit Tigers（3.8%）
+🥈 Houston Astros 5–3 Detroit Tigers（3.8%）
+🥉 Houston Astros 4–4 Detroit Tigers（3.3%）
+4️⃣ Houston Astros 5–4 Detroit Tigers（3.3%）
+5️⃣ Houston Astros 4–2 Detroit Tigers（3.2%）
+━━━━━━━━━━━━━━━━
+📊 盤口深度分析
+讓分盤口     Houston Astros -1.5
+總分大小     8.5
+獨贏賠率
+Detroit Tigers:2.48
+Houston Astros:1.61
+━━━━━━━━━━━━━━━━
+💰 台灣運彩實戰建議
+🔮【主推】獨贏盤 → Houston Astros 勝出
+💎【次要】總分大小 → 小分(8.5)
+⭐【備選】讓分盤 → Houston Astros(-1.5)
+📡 數據來源：AI模型+真實數據+賠率
+⚠️ 請理性投注。
+```
+
+> 註：**「⚽ 總進球數預測」只會出現在足球（FIFA）推播**；棒球（MLB）、籃球（NBA）不顯示（如上方 MLB 範例即無此區塊）。
+
+### ② 賽前 12 小時（早盤觀察）
+
+與 40 分鐘版**逐字相同**，僅標題不同：
+
+```
+🕐 量化預測模型（賽前 12小時預測）
+```
+
+### ③ 賽後結果（event-driven，逐場）
+
+```
+📊 賽後結果
+📅 台灣時間 06/17
+Detroit Tigers vs Houston Astros
+━━━━━━━━━━━━━━━
+預測：Houston Astros 勝出
+實際：Houston Astros 勝出
+結果：✅ 命中
+━━━━━━━━━━━━━━━
+命中結果：1 / 1（100%）
+方向命中率：1 / 1（100%）
+━━━━━━━━━━━━━━━
+獨贏：✅
+精準比分：N/A
+讓分：N/A
+大小分：N/A
+────────────────
+📊 模型表現
+- EV預測準確性：✔ 正向
+- Edge命中：✔ 命中
+────────────────
+📌 預測模式：量化分析
+```
+
+> 驗證的是「賽前主推方向」（MC argmax，與賽前 🔮主推同源）。未命中 → `結果：❌ 未命中`。精準比分／讓分／大小分目前一律 N/A（未獨立驗證，不捏造）。
+
+### ④ FIFA 世界盃批次彙整（每 4 場已驗證 FIFA）
+
+```
+🏆 FIFA 世界盃戰況（批次彙整）
+📦 第 1 批（每 4 場已驗證）
+━━━━━━━━━━━━━━━━
+f1 ✔
+f2 ❌
+f3 ✔
+f4 ❌
+━━━━━━━━━━━━━━━━
+📊 本批次命中：2 / 4
+📈 平均報酬：-21.3%
+🎲 冷門場數（賽前真實勝率<50%一方獲勝）：2 / 4
+━━━━━━━━━━━━━━━━
+📌 資料來源：verified_history（賽後驗證真實結果）
+```
+
+> 仍在賽事池中的場會補上隊名，否則顯示 game_id（資料中無隊名時不捏造）。
+
+-----
+
+## 🏗 架構總覽
 
 ```
 External Scheduler (cron-job.org / Cloudflare)   ← 主觸發（準時）
         +
 GitHub Actions schedule (*/5)                     ← 備援觸發
         ↓
-        workflow_dispatch / schedule
+.github/workflows/bot.yml → python src/sports_prediction.py push
         ↓
-.github/workflows/bot.yml
+tick()                          ← 每次執行全掃描、冪等補齊（非單次觸發）
+   ├─ ensure_pool              （48h 賽事池，快取）
+   ├─ run_early_push           （賽前 12h 窗）
+   ├─ run_pregame_push         （賽前 40m 窗）
+   └─ run_postgame_verify      （event-driven：賽果 completed 即逐場推）
         ↓
-python src/sports_prediction.py push
-        ↓
-tick()                                            ← 每次執行都全掃描、冪等補齊
-   ├─ ensure_pool        （48h 賽事池，快取；TW 0/6/12/18 或過期才打 Odds API）
-   ├─ run_early_push     （賽前 12h 窗）
-   ├─ run_pregame_push   （賽前 40m 窗）
-   └─ run_postgame_verify（賽果出爐 → 驗證主推方向）
+main() 之後（guarded addon）
+   └─ worldcup_batch           （每 4 場 FIFA 已驗證 → 批次彙整）
         ↓
 commit-back 狀態檔（[skip ci] update bot state）
 ```
 
-核心設計：**狀態驅動 + 冪等**。tick 不是「時間點觸發單場」，而是「每次執行掃全部賽事、把該補的全補齊」。因此**只要 tick 有被執行**，任何延遲都能被吸收。
-
-> **Architecture Decision**：本系統採用「**State + Idempotency + Full Scan**」模式，而非 Queue / Event Bus 架構。可靠性由「狀態機冪等 + 全掃描補償 + 可靠 scheduler」達成，不需要 queue/worker/replay engine。維護時請勿改寫為 Queue/Event Bus。
+**核心設計：State + Idempotency + Full Scan**（非 Queue / Event Bus）。
 
 -----
 
-## 推播流程（三段）
-
-|段別          |觸發窗                            |標題          |動作                                                                        |
-|------------|-------------------------------|------------|--------------------------------------------------------------------------|
-|Early（早推）   |賽前 12h（`EARLY_WINDOW_MIN=720`） |🕐 賽前 12 小時預測|predict → send → `mark early` → `save_prediction`                         |
-|Pregame（最終） |賽前 40m（`PREGAME_WINDOW_MIN=40`）|⚡ 賽前 40 分鐘  |predict → send → `mark pre` → `save_prediction`（覆寫同場快照）                   |
-|Postgame（賽後）|賽果 `completed=true`            |📊 賽後結果      |讀 predictions.json → verify 主推方向 → send → `mark post` → 寫 verified_history|
-
-- 每隊標示**客/主**、順序統一（客先主後）。
-- 賽後驗證的是「賽前主推方向」（`result_verifier.main_direction`，與賽前 🔮【主推】同源）。
-- Early 與 Pregame 皆 `save_prediction` → 賽後不依賴 40m 窗是否命中。
-
------
-
-## 狀態檔用途（repo as DB）
-
-|檔案                    |功能                               |
-|----------------------|---------------------------------|
-|`weekly_games.json`   |本週賽事池（48h 內賽事 + 三盤口賠率快取）         |
-|`flags.json`          |推播狀態（每場的 early / pre / post 是否已推）|
-|`predictions.json`    |預測快照（推播當下落盤；賽後驗證的唯一素材來源）         |
-|`verified_history.csv`|賽後驗證紀錄（累積命中率）                    |
-|`key_state.json`      |Odds API 金鑰輪替 / cooldown 狀態      |
-
------
-
-## Recovery 機制（為什麼不會漏）
-
-1. **tick 是全掃描**：每次執行都掃 `weekly_games.json` 全部賽事，不是只處理「剛好到點」的單場。
-1. **非單次觸發**：early 窗寬 12h、pre 窗 40m；任何一次 tick 落在窗內即補推。
-1. **冪等**：`is_pushed(gid, phase)` 確保同一場同一段不會重複推（重複 tick ≠ 重複推播）。
-1. **scheduler 失敗可補推**：某次 tick 沒跑到，下一次 tick 仍會掃到並補齊；early 12h 寬窗幾乎必中。
-1. **賽後保底**：early 成功即落盤 predictions.json，postgame 不受 40m 窄窗漏發影響。
-
-> 結論：系統的可靠性瓶頸**不在邏輯**（已是冪等狀態機），而在「tick 是否被準時執行」。→ 由下節 scheduler 解決。
-
------
-
-## Scheduler 上線（P0，唯一剩餘風險）
-
-### 1. bot.yml — 改 cron 為 `*/5`
-
-```yaml
-on:
-  schedule:
-    - cron: "*/5 * * * *"
-  workflow_dispatch: {}
-
-concurrency:
-  group: bot-runtime-${{ github.ref }}
-  cancel-in-progress: false
-```
-
-### 2. 外部 scheduler（核心，準時觸發）
-
-cron-job.org / Cloudflare Cron，每 5 分鐘：
+## 🔄 預測流程
 
 ```
-POST https://api.github.com/repos/Chun427/sports-prediction-botv3/actions/workflows/bot.yml/dispatches
-Headers:
-  Authorization: Bearer <fine-grained PAT，只給此 repo Actions: Read & Write>
-  Accept: application/vnd.github+json
-  X-GitHub-Api-Version: 2022-11-28
-Body: {"ref":"main"}
+建立賽事池 → 去Vig → Poisson/常態 比分模型 → 蒙特卡羅 → Edge → Truth Gate → Render → Telegram → save_prediction →（賽後）逐場 Verify → Postgame Push
 ```
 
-> ⚠️ workflow 路徑用**檔名 `bot.yml`**，不是 workflow 名稱 `bot-runtime`。
-> GitHub schedule 會被節流/跳過，外部 scheduler 才是準時保證；schedule 當備援。
+|段別         |觸發                             |標題         |
+|-----------|-------------------------------|-----------|
+|Early 早推   |賽前 12h（`EARLY_WINDOW_MIN=720`） |🕐 賽前 12小時預測|
+|Pregame 最終 |賽前 40m（`PREGAME_WINDOW_MIN=40`）|⚡ 賽前 40 分鐘 |
+|Postgame 賽後|賽果 `completed=true`（逐場即時）      |📊 賽後結果     |
+
+賽前兩推成功皆 `save_prediction` 落盤 → 賽後驗證不依賴 40m 窄窗命中。
 
 -----
 
-## 一天驗收清單（P0）
+## 🧩 Overlay 層（addon，不碰核心）
 
-- [ ] Early：有賽事進 12h 窗時，Telegram 收到早推、`flags` 出現 `early=true`
-- [ ] Pregame：賽前 40m 收到最終推播、`flags` 出現 `pre=true`
-- [ ] Postgame：賽果出爐後收到賽後結果、`flags` 出現 `post=true`、`verified_history.csv` 增列
-- [ ] State：`predictions.json` 推播後有快照、賽後驗證後移除 pending
-- [ ] Scheduler：Actions 每 ~5 分有一次 run（外部 dispatch 觸發），無長時間斷檔
+- **⚽ 總進球數（單場）**：只讀既有 `lambda_home/away`，Poisson(λ_total) 分桶，依機率排序顯示。**僅足球（FIFA）顯示**；棒球（MLB）、籃球（NBA）不顯示（總進球分布僅對足球有意義）。不改 score_model/MC/Edge。
+- **🌍 WorldCup Batch**：每 4 場已驗證 FIFA 推一則彙整（命中率/平均報酬/冷門數）；只讀 verified_history；冪等（`worldcup_state.json`）；掛 `main()` tick 之後，不碰逐場賽後。
 
 -----
 
-## 環境設定
+## 📂 狀態檔（repo as DB）
 
-|Secret          |用途                |必填|
-|----------------|------------------|--|
-|`ODDS_API_KEY_1`|Odds API 金鑰       |✅ |
-|`ODDS_API_KEY_2`|備援金鑰              |⬜ |
-|`TG_TOKEN`      |Telegram bot token|✅ |
-|`TG_CHAT`       |Telegram chat id  |✅ |
-
-`bot.yml` 須設 `DRY_RUN: "false"`（未設預設 true＝只 log 不送）。
-
------
-
-## 已知限制（Known Limitations）
-
-|限制                            |影響                     |緩解                                   |
-|------------------------------|-----------------------|-------------------------------------|
-|GitHub Actions schedule 會延遲/跳過|tick 可能不準時 → 窄窗（40m）偶爾漏|外部 scheduler 主觸發；early 寬窗 + 賽後保底     |
-|Odds API 偶發 timeout           |該次刷新可能抓不到/不完整          |金鑰輪替 + cooldown；下次 tick 重試           |
-|Telegram API 可能限流             |推播可能被延遲/擋下             |`send()` 內建 retry；失敗不 mark，下次 tick 補推|
-|賽事/賠率資料依賴 Odds API            |來源沒有的賽事/盤口無法預測         |屬外部依賴，非系統 bug                        |
-
-
-> 看到問題時先對照本表：多數「沒推」是外部依賴或 scheduler 未觸發，而非邏輯 bug。
+|檔案                    |功能                         |
+|----------------------|---------------------------|
+|`weekly_games.json`   |48h 賽事池 + 三盤口賠率快取          |
+|`flags.json`          |推播狀態（每場 early / pre / post）|
+|`predictions.json`    |預測快照（賽後驗證唯一素材來源）           |
+|`verified_history.csv`|賽後驗證紀錄（累積命中率）              |
+|`key_state.json`      |Odds API 金鑰輪替 / cooldown   |
+|`worldcup_state.json` |WorldCup batch 已處理場數（冪等）   |
 
 -----
 
-## 故障排除（Troubleshooting）
+## 🛡️ Recovery（為什麼不會漏）
 
-|現象              |優先檢查                                       |
-|----------------|-------------------------------------------|
-|沒推播             |Actions 是否有執行（schedule/dispatch 有沒有跑）      |
-|沒預測             |Odds API 是否正常、金鑰額度（`key_state.json`）       |
-|沒賽後驗證           |`predictions.json` 是否有該場快照、賽果是否 `completed`|
-|狀態錯誤 / 重複或漏標    |`flags.json` 是否異常                          |
-|跑綠但 Telegram 沒訊息|`DRY_RUN` 是否誤設為 true、`TG_CHAT` 是否正確        |
-|賽事抓不到           |確認該賽事在 Odds API 覆蓋範圍內                      |
+1. **tick 全掃描**：每次掃全部賽事，補齊「在窗內、未推」的場。
+1. **冪等**：`is_pushed(gid, phase)` 防重複（重複 tick ≠ 重複推播）。
+1. **scheduler 失敗自癒**：某次沒跑，下次 tick 補齊。
+1. **賽後保底**：early 成功即落盤 → 不依賴 40m 窄窗。
+
+> 可靠性瓶頸不在邏輯（已是冪等狀態機），而在「tick 是否被準時執行」→ 由 scheduler 解決。
 
 -----
 
-## 成熟度（RC）
+## ⚙️ GitHub Actions / Scheduler
 
-|項目                         |狀態       |
-|---------------------------|---------|
-|預測邏輯 / Kelly / MC / Edge   |✅ 完成     |
-|State / Flags / Idempotency|✅ 完成     |
-|Recovery（全掃描 tick）         |✅ 完成     |
-|Postgame 驗證鏈               |✅ 完成     |
-|主客顯示                       |✅ 完成     |
-|Scheduler                  |⏳ 待上線（P0）|
-|一天驗收                       |⏳ 待執行（P0）|
-
-完成 P0 後 → **V3 RC → Production Ready**。
+- `bot.yml`：`schedule: */5` + `workflow_dispatch`；跑 `python src/sports_prediction.py push`，結束 commit-back 狀態檔。
+- **外部 scheduler（核心）**：cron-job.org / Cloudflare 每 5 分鐘 POST
+  `.../actions/workflows/bot.yml/dispatches`（用檔名 `bot.yml`，body `{"ref":"main"}`，PAT 只給該 repo Actions:write）。
+- 公開 repo Actions 分鐘免費；賽程池快取不增賠率 API 用量；但有 pending 場時每 tick 會打**賽果 API** → `*/5` 為延遲與額度平衡點。
 
 -----
 
-## 不在本版範圍（明確排除）
+## 🚫 設計邊界（已封板）
 
-per `result_verifier.py`：不做 spread / totals / exact score / **player awards / tournament（冠軍、金球、金靴、金手套）**——未預測、現有資料源（Odds API）無從驗證。如需為未來開發新功能，需新增資料源，非現行 bug。
+- 不使用 webhook（Odds API 僅 polling）。
+- 不做 bracket / 冠軍模擬（無賽程結構，避免造假機率）。
+- 不做個人獎項（金球/金靴/金手套，無球員資料源）。
+- 不生成未驗證機率模型（缺資料一律 N/A，永不捏造）。
+- 不修改核心：score_model / monte_carlo / prediction_engine / kelly / Edge / Risk / result_verifier（含 `main_direction`）。新功能一律 additive overlay。
+
+-----
+
+## 🧪 測試 & 部署
+
+- `pytest -q` → **178 passed**；CI 必須全綠才可 merge。
+- **Secrets**：`ODDS_API_KEY_1`(必)、`ODDS_API_KEY_2`、`TG_TOKEN`(必)、`TG_CHAT`(必)；`bot.yml` 須 `DRY_RUN: "false"`（未設預設 true＝只 log）。
+- **Overlay bundle**（新分支 + PR，CI 綠才 merge）：
+  `src/notifier.py`(覆蓋)、`src/sports_prediction.py`(覆蓋)、`src/total_goals.py`(新)、`src/worldcup_batch.py`(新)、`tests/test_total_goals.py`(新)、`tests/test_worldcup_batch.py`(新)、`tests/test_postgame.py`(保留)。
+
+-----
+
+## ⚠️ 免責聲明
+
+本系統為統計模型分析工具，輸出為方向參考，**非投注獲利保證、非 +EV 投注建議**。請理性評估、自負盈虧，並遵守所在地區法律。
