@@ -1067,5 +1067,113 @@
       }
     },
     "pre_pushed_at": "2026-06-17T18:00:35+08:00"
+  },
+  "1b3b5ac473b471165355ca855853dbb2": {
+    "prediction": {
+      "game_id": "1b3b5ac473b471165355ca855853dbb2",
+      "sport": "MLB",
+      "home": "Boston Red Sox",
+      "away": "Toronto Blue Jays",
+      "start_time": "2026-06-18T06:46:00+08:00",
+      "market": {
+        "asian_handicap": -1.5,
+        "over_under": 9.5,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-17T10:58:21.515845+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "away": 0.4619,
+        "home": 0.5381
+      },
+      "best_odds": {
+        "home": 1.81,
+        "away": 2.12
+      },
+      "edge": {
+        "away": -0.0208,
+        "home": -0.026
+      },
+      "best_pick": null,
+      "avg_overround": 0.0377,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-17T18:58:19+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "MLB",
+        "lambda_home": 5.5,
+        "lambda_away": 4.0,
+        "expected_total": 9.5,
+        "supremacy": 1.5,
+        "outcome_probs": {
+          "home": 0.6248,
+          "draw": 0.1178,
+          "away": 0.2574
+        },
+        "top_scorelines": [
+          {
+            "home": 5,
+            "away": 3,
+            "prob": 0.0336
+          },
+          {
+            "home": 5,
+            "away": 4,
+            "prob": 0.0336
+          },
+          {
+            "home": 6,
+            "away": 3,
+            "prob": 0.0308
+          },
+          {
+            "home": 6,
+            "away": 4,
+            "prob": 0.0308
+          },
+          {
+            "home": 4,
+            "away": 3,
+            "prob": 0.0306
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.6208,
+          "draw": 0.1187,
+          "away": 0.2606
+        },
+        "top_scorelines": [
+          {
+            "home": 5,
+            "away": 4,
+            "prob": 0.0341
+          },
+          {
+            "home": 5,
+            "away": 3,
+            "prob": 0.0331
+          },
+          {
+            "home": 4,
+            "away": 4,
+            "prob": 0.0328
+          },
+          {
+            "home": 4,
+            "away": 3,
+            "prob": 0.0326
+          },
+          {
+            "home": 6,
+            "away": 4,
+            "prob": 0.0319
+          }
+        ]
+      }
+    },
+    "pre_pushed_at": "2026-06-17T18:58:21+08:00"
   }
 }
