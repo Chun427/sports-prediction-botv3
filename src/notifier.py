@@ -162,7 +162,7 @@ def render_postgame(verification: dict, prediction: dict, result: dict) -> str:
 def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> str:
     """賽果驗收型 UI（單場）：只對答案——比分5組命中 / 總進球命中 / 台彩三項命中。
     不顯示 confidence / MC / 主推 / 累積KPI。缺盤口資料的項目誠實標 N/A，不捏造。
-    比分・總進球僅 Poisson 類（FIFA/MLB）有；NBA 等無 → N/A。"""
+    比分僅 Poisson 類（FIFA/MLB）有；總進球僅足球（FIFA）；NBA 等無 → 整段略過。"""
     home = prediction.get("home", "")
     away = prediction.get("away", "")
     pick = verification.get("pick_outcome")
@@ -192,8 +192,8 @@ def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> 
         out.append(f"👉 命中：{n_hit} / {len(sl)}")
         score_hit_line = f"比分命中：{n_hit}/{len(sl)}"
 
-    # 2. 總進球數（僅 Poisson 類有；非 Poisson 整段略過）
-    g = _total_goals.goal_buckets(score)
+    # 2. 總進球數（僅足球 FIFA 顯示；棒球/籃球等不顯示）
+    g = _total_goals.goal_buckets(score) if str(prediction.get("sport", "")).upper() == "FIFA" else None
     tg_hit_line = None
     if g and has_score:
         out += [_DREAM_DIV, "⚽ 總進球數"]
@@ -206,7 +206,7 @@ def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> 
 
     # 3. 台彩三項（獨贏；讓分/大小：有盤口線才真驗，否則誠實 N/A）
     out += [_DREAM_DIV, "💰 台彩投注（實戰三項）"]
-    if pick is None:
+    if not pick:
         out.append("獨贏（ML）：N/A")
         ml_hit = "獨贏命中：N/A"
     elif hit:
@@ -442,14 +442,8 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     k = _kelly.compute_kelly(prediction)
     kfrac = k["kelly"]["clipped_fraction"]
     risk_zh = {"low": "低", "medium": "中", "high": "高"}.get(k.get("risk_level"), "N/A")
-    # DEBUG（診斷用，不改 Kelly 公式）：印主推方向的 model/market/edge/odds/kelly，確認為何多為 0%
-    _dbg = result_verifier.main_direction(prediction)
-    obs.info("kelly.debug", direction=_dbg,
-             model_prob=(mc.get(_dbg) if mc else None),
-             market_prob=fp.get(_dbg),
-             edge=edge.get(_dbg),
-             odds=odds.get(_dbg),
-             kelly_fraction=kfrac)
+    # 診斷（已去識別）：只記錄 Kelly 是否為 0，不外洩方向／賠率／edge／勝率。
+    obs.info("kelly.computed", kelly_zero=(kfrac == 0.0))
 
     def _wp(team, val):
         return f"{team}  {_bar10(val)}  {val * 100:.1f}%" if isinstance(val, (int, float)) else f"{team}  N/A"
@@ -531,8 +525,8 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         ou_pick = f"總分大小 → {_ou_dir}({_et:g})"
     else:
         ou_pick = "N/A"
-    # 總進球數分布（單場，FIFA/MLB Poisson）：display-only，讀既有 lambda，不碰 score_model
-    _tg = _total_goals.render_total_goals_block(score)
+    # 總進球數分布（單場）：display-only，讀既有 lambda，不碰 score_model。僅足球（FIFA）顯示。
+    _tg = _total_goals.render_total_goals_block(score) if str(sport).upper() == "FIFA" else []
     if _tg:
         out += [_DREAM_DIV] + _tg
 
