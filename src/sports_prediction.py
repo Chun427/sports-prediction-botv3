@@ -25,6 +25,7 @@ import monte_carlo_engine
 import notifier
 import obs
 import result_verifier
+import verified_enrich
 import market_lines
 import score_model
 import shadow_logger
@@ -211,6 +212,7 @@ def run_pregame_push(
                     g["prediction"]["market"] = market_lines.extract_market(g)
                 except Exception:  # noqa: BLE001 — 盤口抽取失敗不可中斷推播
                     g["prediction"].setdefault("market", None)
+                g["prediction"]["phase"] = "pre_match_40m"  # V4：階段追蹤（純標記）
                 dm.save_prediction(gid, g["prediction"])
             shadow_logger.log_prediction(g)  # V3.2 影子記錄（內部 guarded，不影響推播）
             pushed.append(gid)
@@ -284,6 +286,7 @@ def run_early_push(
                     g["prediction"]["market"] = market_lines.extract_market(g)
                 except Exception:  # noqa: BLE001 — 盤口抽取失敗不可中斷推播
                     g["prediction"].setdefault("market", None)
+                g["prediction"]["phase"] = "early_12h"  # V4：階段追蹤（純標記）
                 dm.save_prediction(gid, g["prediction"])
             pushed.append(gid)
             obs.info("early.sent", game_id=gid)
@@ -349,7 +352,11 @@ def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
                 continue
             if ok:
                 dm.mark_pushed(gid, "post")  # send → mark（idempotent）
-                dm.append_verified({**v, "sport": sport})
+                try:
+                    _enrich = verified_enrich.enrich(pred, r, sport)
+                except Exception:  # noqa: BLE001 — 回饋擴充失敗不可影響推播/封存
+                    _enrich = {}
+                dm.append_verified({**v, "sport": sport, **_enrich})
                 dm.remove_prediction(gid)
                 shadow_logger.log_result(gid, r, v, sport)  # V3.2 影子結果（guarded）
                 verified.append(gid)
