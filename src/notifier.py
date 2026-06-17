@@ -23,6 +23,7 @@ import kelly as _kelly
 import result_verifier
 import data_manager as _dm
 import total_goals as _total_goals
+import market_lines as _market
 from constants import (
     PREGAME_TEMPLATE_TAG, POSTGAME_TEMPLATE_TAG, TELEGRAM_API_BASE, TG_RETRY,
     PREGAME_WINDOW_MIN, EARLY_WINDOW_MIN,
@@ -155,6 +156,91 @@ def render_postgame(verification: dict, prediction: dict, result: dict) -> str:
         "────────────────",
         "📌 預測模式：量化分析",
     ]
+    return "\n".join(out)
+
+
+def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> str:
+    """賽果驗收型 UI（單場）：只對答案——比分5組命中 / 總進球命中 / 台彩三項命中。
+    不顯示 confidence / MC / 主推 / 累積KPI。缺盤口資料的項目誠實標 N/A，不捏造。
+    比分・總進球僅 Poisson 類（FIFA/MLB）有；NBA 等無 → N/A。"""
+    home = prediction.get("home", "")
+    away = prediction.get("away", "")
+    pick = verification.get("pick_outcome")
+    hit = verification.get("pick_hit")
+    score = prediction.get("model_score") or {}
+    hs, aws = result.get("home_score"), result.get("away_score")
+    has_score = isinstance(hs, int) and isinstance(aws, int)
+    medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
+
+    out = [
+        "📊 比賽結果驗證（單場）",
+        f"📅 台灣時間 {_fmt_date_tw(prediction.get('start_time', '') or verification.get('verified_at', ''))}",
+        f"{away} vs {home}",
+    ]
+
+    # 1. 比分 5 組（僅 Poisson 類有；非 Poisson（NBA）整段略過，不顯示 N/A）
+    sl = (score.get("top_scorelines") or [])[:5]
+    score_hit_line = None
+    if sl and has_score:
+        out += [_DREAM_DIV, "🥅 比分預測（5組）"]
+        n_hit = 0
+        for i, s in enumerate(sl):
+            sh, sa = s.get("home"), s.get("away")
+            ok = (sh == hs and sa == aws)
+            n_hit += 1 if ok else 0
+            out.append(f"{medals[i]} {home} {sh}–{sa} {away} {'✅' if ok else '❌'}")
+        out.append(f"👉 命中：{n_hit} / {len(sl)}")
+        score_hit_line = f"比分命中：{n_hit}/{len(sl)}"
+
+    # 2. 總進球數（僅 Poisson 類有；非 Poisson 整段略過）
+    g = _total_goals.goal_buckets(score)
+    tg_hit_line = None
+    if g and has_score:
+        out += [_DREAM_DIV, "⚽ 總進球數"]
+        total = hs + aws
+        tg_ok = (_total_goals.bucket_label_of_total(total) == g["most_likely"])
+        out.append(f"預測範圍：{g['most_likely']} 球")
+        out.append(f"實際結果：{total} 球")
+        out.append(f"👉 {'命中 ✅' if tg_ok else '未中 ❌'}")
+        tg_hit_line = f"總進球命中：{'✅' if tg_ok else '❌'}"
+
+    # 3. 台彩三項（獨贏；讓分/大小：有盤口線才真驗，否則誠實 N/A）
+    out += [_DREAM_DIV, "💰 台彩投注（實戰三項）"]
+    if pick is None:
+        out.append("獨贏（ML）：N/A")
+        ml_hit = "獨贏命中：N/A"
+    elif hit:
+        out.append("獨贏（ML）：✅ 命中")
+        ml_hit = "獨贏命中：✅"
+    else:
+        out.append("獨贏（ML）：❌ 未中")
+        ml_hit = "獨贏命中：❌"
+
+    market = prediction.get("market")
+    ah_res = _market.verify_handicap(market, hs, aws) if market else None
+    ou_res = _market.verify_total(market, score, hs, aws) if market else None
+
+    def _mk(res, kind):
+        if res is None:
+            return (f"{kind}：N/A（尚未提供盤口）", f"{kind}：N/A")
+        label, ok = res
+        if ok is None:
+            return (f"{kind}（{label}）：走盤／和盤", f"{kind}：走盤")
+        return (f"{kind}（{label}）：{'✅ 命中' if ok else '❌ 未中'}",
+                f"{kind}：{'✅' if ok else '❌'}")
+
+    ah_line, ah_sum = _mk(ah_res, "讓分（AH）")
+    ou_line, ou_sum = _mk(ou_res, "大小（O/U）")
+    out.append(ah_line)
+    out.append(ou_line)
+
+    # 單場結論
+    out += [_DREAM_DIV, "📌 單場結論"]
+    if score_hit_line:
+        out.append(score_hit_line)
+    if tg_hit_line:
+        out.append(tg_hit_line)
+    out += [ml_hit, ah_sum, ou_sum]
     return "\n".join(out)
 
 
@@ -461,7 +547,6 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         f"🔮【主推】{main}",
         f"💎【次要】{ou_pick}",
         f"⭐【備選】{hcap_pick}",
-        "（🔮 主推＝MC 方向；💎 次要/⭐ 備選＝市場盤口方向；僅供參考，非 +EV）",
         _DREAM_DIV, "📊 風控資訊",
         f"- Kelly：{kfrac * 100:.1f}%",
         f"- Risk Level：{risk_zh}",
