@@ -25,6 +25,7 @@ import monte_carlo_engine
 import notifier
 import obs
 import result_verifier
+import market_lines
 import score_model
 import shadow_logger
 from constants import (
@@ -206,6 +207,10 @@ def run_pregame_push(
             # C-1：pre-push 成功且有 prediction → 落盤 snapshot（pending 驗證）。
             # DRY_RUN 也存：在真實送出前即開始累積 truth-loop 對照資料。
             if "prediction" in g:
+                try:
+                    g["prediction"]["market"] = market_lines.extract_market(g)
+                except Exception:  # noqa: BLE001 — 盤口抽取失敗不可中斷推播
+                    g["prediction"].setdefault("market", None)
                 dm.save_prediction(gid, g["prediction"])
             shadow_logger.log_prediction(g)  # V3.2 影子記錄（內部 guarded，不影響推播）
             pushed.append(gid)
@@ -275,6 +280,10 @@ def run_early_push(
             # V3.1-fix：early 也落盤 snapshot → 賽後驗證不再依賴 40m 窗命中。
             # idempotent：之後 40m final push 若有跑，會用更新（更近賽）的快照覆寫同一 game_id。
             if "prediction" in g:
+                try:
+                    g["prediction"]["market"] = market_lines.extract_market(g)
+                except Exception:  # noqa: BLE001 — 盤口抽取失敗不可中斷推播
+                    g["prediction"].setdefault("market", None)
                 dm.save_prediction(gid, g["prediction"])
             pushed.append(gid)
             obs.info("early.sent", game_id=gid)
@@ -334,7 +343,7 @@ def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
             if v is None:
                 continue
             try:
-                ok = post_pusher(notifier.render_postgame(v, pred, r))
+                ok = post_pusher(notifier.render_postgame_eval(v, pred, r))
             except Exception as exc:  # noqa: BLE001 — 推播失敗不可崩
                 obs.error("postgame.push_failed", game_id=gid, err=str(exc))
                 continue
