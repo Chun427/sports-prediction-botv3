@@ -22,6 +22,7 @@ import obs
 import kelly as _kelly
 import result_verifier
 import data_manager as _dm
+import total_goals as _total_goals
 from constants import (
     PREGAME_TEMPLATE_TAG, POSTGAME_TEMPLATE_TAG, TELEGRAM_API_BASE, TG_RETRY,
     PREGAME_WINDOW_MIN, EARLY_WINDOW_MIN,
@@ -444,6 +445,11 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         ou_pick = f"總分大小 → {_ou_dir}({_et:g})"
     else:
         ou_pick = "N/A"
+    # 總進球數分布（單場，FIFA/MLB Poisson）：display-only，讀既有 lambda，不碰 score_model
+    _tg = _total_goals.render_total_goals_block(score)
+    if _tg:
+        out += [_DREAM_DIV] + _tg
+
     out += [
         _DREAM_DIV, "📊 盤口深度分析",
         f"讓分盤口     {spread_label}",
