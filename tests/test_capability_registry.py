@@ -36,3 +36,9 @@ def test_unknown_capability():
 def test_supported_subset():
     names = {c.name for c in reg.supported_capabilities()}
     assert "Champion" in names and "BallonDor" not in names
+
+
+def test_goldenglove_registered_unsupported():
+    c = reg.get("GoldenGlove")
+    assert c is not None and c.supported is False
+    assert reg.reason_if_na("GoldenGlove")
