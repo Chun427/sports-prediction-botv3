@@ -46,7 +46,7 @@ def test_model_absent_shows_na_sections_present():
     msg = notifier.render_pregame_lite(pred)
     # section 仍在，但內容 N/A（不隱藏、不捏造）
     assert "蒙特卡羅模擬勝率" in msg
-    assert "Team A  N/A" in msg
+    assert "Team A N/A" in msg
     assert "🥇 N/A" in msg
 
 
