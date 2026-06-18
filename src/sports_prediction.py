@@ -453,6 +453,15 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # noqa: BLE001 — addon 不得影響核心
         obs.error("worldcup.error", err=str(exc))
 
+    # ── 冠軍 + 個人獎項 futures 推播（addon layer，guarded，每日 1 次）──
+    # 獨立於 match push / tick 核心：build_awards 走 registry→fetch→validate（market 唯一真相）。
+    try:
+        import awards_push
+        aw_pusher = notifier.make_pusher(dry_run, renderer=lambda m: m, **tg)
+        awards_push.run_awards_push(aw_pusher, now=now)
+    except Exception as exc:  # noqa: BLE001 — addon 不得影響核心
+        obs.error("awards.error", err=str(exc))
+
     return 0
 
 
