@@ -161,8 +161,8 @@ def render_postgame(verification: dict, prediction: dict, result: dict) -> str:
 
 def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> str:
     """賽果驗收型 UI（單場）：只對答案——比分5組命中 / 總進球命中 / 台彩三項命中。
-    不顯示 confidence / MC / 主推 / 累積KPI。投注結果只用「中／錯／退（退錢）」；
-    缺資料的投注項目直接略過（不捏造、不顯示術語或盤口線）。
+    不顯示 confidence / MC / 主推 / 累積KPI。投注結果只用「中／❌」（命中→中、未中或走盤→❌）；
+    缺資料的投注項目直接略過（不捏造、不顯示走盤/退/術語/盤口線）。
     比分僅 Poisson 類（FIFA/MLB）有；總進球僅足球（FIFA）；NBA 等無 → 整段略過。"""
     home = prediction.get("home", "")
     away = prediction.get("away", "")
@@ -205,20 +205,17 @@ def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> 
         out.append(f"👉 {'命中 ✅' if tg_ok else '未中 ❌'}")
         tg_hit_line = f"總進球命中：{'✅' if tg_ok else '❌'}"
 
-    # 3. 投注結果（使用者版：只用「中 / 錯 / 退（退錢）」；無資料的列直接略過，不捏造、不顯示術語或線）
-    out += [_DREAM_DIV, "💰 投注結果"]
+    # 3. 台彩投注（實戰三項）：只用「中 / ❌」（命中→中、未中或走盤→❌）；不顯示走盤/退/線/術語/賠率。
+    out += [_DREAM_DIV, "💰 台彩投注（實戰三項）"]
 
     def _verdict(ok):
-        if ok is True:
-            return "中"
-        if ok is False:
-            return "錯"
-        return "退（退錢）"   # ok is None → 平局／退本金
+        return "中" if ok is True else "❌"   # 命中→中；未中或走盤→❌（依規則不顯示「退」「走盤」）
 
     ml_sum = None
     if pick:
-        out.append(f"獨贏（ML）：{'中' if hit else '錯'}")
-        ml_sum = f"獨贏（ML）：{'中' if hit else '錯'}"
+        v = "中" if hit else "❌"
+        out.append(f"獨贏（ML）：{v}")
+        ml_sum = f"獨贏（ML）：{v}"
 
     market = prediction.get("market")
     ah_res = _market.verify_handicap(market, hs, aws) if market else None
