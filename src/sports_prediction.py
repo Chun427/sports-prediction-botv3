@@ -462,6 +462,16 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # noqa: BLE001 — addon 不得影響核心
         obs.error("awards.error", err=str(exc))
 
+    # ── Production Readiness Gate（唯讀；只報告，不影響核心）──
+    try:
+        from release_gate import is_production_ready
+        status = is_production_ready()
+        if not status["ready"]:
+            print("[BLOCKED] system not production ready")
+            print(status)
+    except Exception as exc:  # noqa: BLE001 — gate 不得影響核心
+        obs.error("release_gate.error", err=str(exc))
+
     return 0
 
 
