@@ -22,9 +22,10 @@ _OUTRIGHT_KEYS: dict[str, str] = {
 }
 
 _TITLES: dict[str, str] = {
-    "Champion": "🏆 冠軍機率（市場隱含·去Vig）",
-    "TopGoalscorer": "👟 射手榜（市場隱含·去Vig）",
-    "GoldenBoot": "👟 金靴（市場隱含·去Vig）",
+    "Champion": "🏆 冠軍預測",
+    "TopGoalscorer": "👟 射手榜",
+    "GoldenBoot": "👟 金靴獎",
+    "GoldenGlove": "🧤 金手套獎",
 }
 
 
@@ -86,3 +87,19 @@ def render_text(capability: str, *, getter=None) -> str:
 
 def render_json(capability: str, *, getter=None) -> str:
     return futures_render.render_json(build(capability, getter=getter))
+
+
+# ── 合併獎項推播（Champion + GoldenBoot + GoldenGlove）─────
+# orchestrator 決定要哪些能力；每項仍走 registry → fetch → devig → 排序。
+# 未確認/無盤口的能力 → build() 回 available=False → render 顯示 N/A（不捏造）。
+_AWARD_SET = ["Champion", "GoldenBoot", "GoldenGlove"]
+
+
+def build_awards(capabilities: list[str] | None = None, *, getter=None) -> list[dict]:
+    """產生獎項區塊資料（每能力一個 build() 結果，已備妥給 renderer）。"""
+    return [build(c, getter=getter) for c in (capabilities or _AWARD_SET)]
+
+
+def render_awards(capabilities: list[str] | None = None, *, getter=None,
+                  header: str = "🏆 World Cup 冠軍與個人獎項（市場隱含）") -> str:
+    return futures_render.render_awards(build_awards(capabilities, getter=getter), header=header)
