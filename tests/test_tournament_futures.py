@@ -67,3 +67,14 @@ def test_render_text_and_json_entrypoints():
     assert "Spain" in txt and "市場隱含" in txt
     back = json.loads(tf.render_json("Champion", getter=_getter_ok))
     assert back["available"] is True and back["ranked"][0]["outcome"] == "Spain"
+
+
+def test_build_awards_champion_available_others_na():
+    results = tf.build_awards(getter=_getter_ok)
+    assert [r["capability"] for r in results] == ["Champion", "GoldenBoot", "GoldenGlove"]
+    assert results[0]["available"] is True                  # Champion 有 getter 資料
+    assert results[1]["available"] is False                 # GoldenBoot 未支援 → N/A
+    assert results[2]["available"] is False                 # GoldenGlove 未支援 → N/A
+    txt = tf.render_awards(getter=_getter_ok)
+    assert "🏆 冠軍預測" in txt and "Spain" in txt
+    assert "（暫無盤口資料）" in txt and "請理性投注" in txt
