@@ -34,7 +34,7 @@ def test_window_minutes_is_dynamic_not_hardcoded():
 def test_all_fixed_sections_present():
     out = nf.render_pregame_lite(PRED_2WAY)
     for header in [
-        "🎯 精算師預測系統", "⚡ 量化預測模型", "📐 去Vig真實勝率", "蒙特卡羅模擬勝率",
+        "🎯 精算師預測系統", "⚡ 量化預測模型", "去Vig真實勝率", "蒙特卡羅模擬勝率",
         "🏆 最可能出現的比分", "💰 台灣運彩實戰建議",
         "🔮【主推】", "💎【次要】", "⭐【備選】",
         "📡 數據來源：AI模型+真實數據+賠率", "⚠️ 請理性投注。",
@@ -46,7 +46,7 @@ def test_devig_real_values():
     out = nf.render_pregame_lite(PRED_2WAY)
     assert "Mariners" in out and "Tigers" in out
     assert "50.0%" in out
-    assert "█" in out and "░" in out
+    assert "█" not in out and "░" not in out   # 已移除進度條（②：純「隊伍 X%」）
 
 
 def test_edge_not_displayed():
@@ -63,7 +63,7 @@ def test_handicap_block_removed():
 def test_missing_model_shows_na_not_fabricated():
     out = nf.render_pregame_lite(PRED_2WAY)
     assert "蒙特卡羅模擬勝率" in out
-    assert "Tigers  N/A" in out and "Mariners  N/A" in out
+    assert "Tigers N/A" in out and "Mariners N/A" in out
     assert "🥇 N/A" in out
     assert "📊 盤口深度分析" not in out
 
