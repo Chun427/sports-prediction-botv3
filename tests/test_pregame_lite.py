@@ -27,14 +27,14 @@ PRED_NO_PICK = {**PRED_2WAY, "best_pick": None}
 
 def test_window_minutes_is_dynamic_not_hardcoded():
     out = nf.render_pregame_lite(PRED_2WAY)
-    assert f"賽前 {PREGAME_WINDOW_MIN} 分鐘" in out
-    assert "賽前 30 分鐘" not in out
+    assert f"賽前 {PREGAME_WINDOW_MIN}分鐘" in out
+    assert "賽前 30分鐘" not in out
 
 
 def test_all_fixed_sections_present():
     out = nf.render_pregame_lite(PRED_2WAY)
     for header in [
-        "🎯 精算師預測系統", "⚡ 量化預測模型", "去Vig真實勝率", "蒙特卡羅模擬勝率",
+        "🎯 精算師預測系統", "🕐 量化預測模型", "去Vig真實勝率", "蒙特卡羅模擬勝率",
         "🏆 最可能出現的比分", "💰 台灣運彩實戰建議",
         "🔮【主推】", "💎【次要】", "⭐【備選】",
         "📡 數據來源：AI模型+真實數據+賠率", "⚠️ 請理性投注。",
