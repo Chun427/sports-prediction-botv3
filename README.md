@@ -64,7 +64,6 @@ Detroit Tigers 🆚 Chicago White Sox
 ━━━━━━━━━━━━━━━━
 🥅 比分預測
 🎯命中：1/5 （20%）
-
 🥇 Detroit Tigers 4-3 Chicago White Sox ❌
 🥈 Detroit Tigers 5-3 Chicago White Sox ✅
 🥉 Detroit Tigers 4-4 Chicago White Sox ❌
@@ -86,7 +85,7 @@ Detroit Tigers 🆚 Chicago White Sox
 > 比分 5 組僅 Poisson 類（FIFA／MLB）有，**籃球（NBA）整段不顯示**；賽後不再顯示總進球區塊。
 > 單場結論：`🎯命中 X/4`＝｛比分(≥1組中算1)＋ML＋AH＋OU｝可用類別命中數（NBA 無比分→/3）；下方另列「比分命中 X/5」「市場命中 X/3」分層真值。沒有盤口資料的投注項目直接略過（不捏造）。
 
-### ④ 每日戰報（取代舊 WorldCup 批次）
+### ④ 每日戰報
 ```
 📅 今日戰報 06/18
 ━━━━━━━━
@@ -166,7 +165,7 @@ commit-back 狀態檔（[skip ci] update bot state）
 ## 🧩 Overlay 層（addon，不碰核心）
 
 - **⚽ 總進球數（單場）**：只讀既有 `lambda_home/away`，Poisson(λ_total) 分桶，依機率排序顯示。**僅足球（FIFA）顯示**；棒球（MLB）、籃球（NBA）不顯示（總進球分布僅對足球有意義）。不改 score_model/MC/Edge。
-- **📅 每日戰報**（取代舊 WorldCup 批次）：當天賽事全驗證完 + 距最近驗證 ≥30 分，推一則「本日總命中＋各球類命中率」；只讀 verified_history + weekly_games；每日冪等（flags `daily-YYYYMMDD`）；掛 `main()` tick 之後，不碰逐場賽後。`worldcup_batch.py` 已 dormant（`main()` 不再呼叫）。
+- **📅 每日戰報：當天賽事全驗證完 + 距最近驗證 ≥30 分，推一則「本日總命中＋各球類命中率」；只讀 verified_history + weekly_games；每日冪等（flags `daily-YYYYMMDD`）；掛 `main()` tick 之後，不碰逐場賽後。`worldcup_batch.py` 已 dormant（`main()` 不再呼叫）。
 - **📊 Audit Engine（V4 Phase 2 · 可觀測層）**：唯讀 KPI 報表（依運動/盤口分組命中率、平均報酬、樣本不足警示）；只讀 `normalized_verified_view()`，**不碰核心、不寫狀態、不進推播路徑**。
 
 -----
