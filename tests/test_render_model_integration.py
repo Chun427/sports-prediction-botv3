@@ -60,5 +60,6 @@ def test_nba_has_mc_but_scores_are_na():
     })
     msg = notifier.render_pregame_lite(pred)
     assert "蒙特卡羅模擬勝率" in msg
-    assert "🥇 N/A" in msg                  # NBA 不輸出精準比分 → N/A（誠實）
+    assert "最可能出現的比分" not in msg     # NBA 非 Poisson → 比分區塊整段隱藏（不顯示 N/A、不顯示假比分）
+    assert "🥇 N/A" not in msg
     assert "🥇 Team H" not in msg
