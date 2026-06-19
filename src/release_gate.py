@@ -28,16 +28,17 @@ def _safe_getter(*_a, **_k):   # 不連網：smoke test 用，避免每 tick 打
 
 
 def _check_pipeline() -> tuple[bool, list[str]]:
-    """4 條核心 push 鏈路是否齊全且接線（pre/early/post + worldcup）。"""
+    """核心 push 鏈路（pre/early/post）是否「定義且接進 tick」。
+    彙整型 addon（每日戰報/獎項）不在此硬性檢查 —— 改由 _check_orphans 以 warning 追蹤，
+    避免日後新增/替換 addon 時都要回頭改 gate token。"""
     blockers: list[str] = []
     try:
         sp = _read("sports_prediction.py")
         for fn in _CORE_PUSH:
             if f"def {fn}" not in sp:
                 blockers.append(f"push route 缺失：{fn}")
-        for token in (*_CORE_PUSH, "daily_report.run_daily_report"):
-            if token not in sp:
-                blockers.append(f"push pipeline 未接線：{token}")
+            elif sp.count(fn) < 2:           # 只出現在 def、未被 tick 呼叫 → 未接線
+                blockers.append(f"push pipeline 未接線：{fn}")
     except Exception as exc:  # noqa: BLE001
         blockers.append(f"pipeline 檢查失敗：{exc}")
     return (not blockers), blockers
@@ -64,6 +65,8 @@ def _check_orphans() -> tuple[bool, list[str]]:
         if "awards_push.run_awards_push" not in sp:
             ok = False
             warnings.append("critical orphan：awards_push 未接 main()")
+        if "daily_report.run_daily_report" not in sp:
+            warnings.append("每日戰報（daily_report）未接 main()（warning，非阻擋）")
         if "weekly_report" not in sp and "build_weekly_report" not in sp:
             warnings.append("weekly_report 為 orphan（未接 push，已知 deferred，非阻擋）")
     except Exception as exc:  # noqa: BLE001
