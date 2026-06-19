@@ -1981,5 +1981,117 @@
       "phase": "early_12h"
     },
     "pre_pushed_at": "2026-06-19T22:23:13+08:00"
+  },
+  "f955d4b3395ce6e3b5ac1031ca52ca4e": {
+    "prediction": {
+      "game_id": "f955d4b3395ce6e3b5ac1031ca52ca4e",
+      "sport": "FIFA",
+      "home": "Turkey",
+      "away": "Paraguay",
+      "start_time": "2026-06-20T11:00:00+08:00",
+      "market": {
+        "asian_handicap": -0.5,
+        "over_under": 2.5,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-19T16:44:49.134120+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "home": 0.4661,
+        "draw": 0.2832,
+        "away": 0.2507
+      },
+      "best_odds": {
+        "home": 2.06,
+        "away": 3.92,
+        "draw": 3.45
+      },
+      "edge": {
+        "home": -0.0398,
+        "draw": -0.0231,
+        "away": -0.0173
+      },
+      "best_pick": null,
+      "avg_overround": 0.0489,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-20T00:44:48+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 1.5,
+        "lambda_away": 1.0,
+        "expected_total": 2.5,
+        "supremacy": 0.5,
+        "outcome_probs": {
+          "home": 0.4879,
+          "draw": 0.2598,
+          "away": 0.2522
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.1231
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1231
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.0923
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0923
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "prob": 0.0821
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.4936,
+          "draw": 0.2564,
+          "away": 0.25
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.1241
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1231
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.094
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.093
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "prob": 0.0802
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-20T00:44:49+08:00"
   }
 }
