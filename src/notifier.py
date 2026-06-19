@@ -183,15 +183,15 @@ def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> 
     sl = (score.get("top_scorelines") or [])[:5]
     score_hit_line = None
     if sl and has_score:
-        out += [_DREAM_DIV, "🥅 比分預測（5組）"]
-        n_hit = 0
+        score_total = len(sl)
+        score_hit = sum(1 for s in sl if s.get("home") == hs and s.get("away") == aws)
+        s_pct = round(score_hit / score_total * 100) if score_total else 0
+        out += [_DREAM_DIV, "🥅 比分預測（5組）", f"🎯命中：{score_hit}/{score_total}（{s_pct}%）"]
         for i, s in enumerate(sl):
             sh, sa = s.get("home"), s.get("away")
             ok = (sh == hs and sa == aws)
-            n_hit += 1 if ok else 0
             out.append(f"{medals[i]} {away} {sa}–{sh} {home} {'✅' if ok else '❌'}")
-        out.append(f"👉 命中：{n_hit} / {len(sl)}")
-        score_hit_line = f"比分命中：{n_hit}/{len(sl)}"
+        score_hit_line = f"比分命中：{score_hit}/{score_total}（{s_pct}%）"
 
     # 2. 總進球數（僅足球 FIFA 顯示；棒球/籃球等不顯示）
     g = _total_goals.goal_buckets(score) if str(prediction.get("sport", "")).upper() == "FIFA" else None
@@ -206,39 +206,44 @@ def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> 
         tg_hit_line = f"總進球命中：{'✅' if tg_ok else '❌'}"
 
     # 3. 台灣運彩投注：✅/❌（命中→✅、未中或走盤→❌）；顯示盤口標籤（如 主-0.2 / 線2.0）。無盤口的列略過。
-    out += [_DREAM_DIV, "💰 台灣運彩投注"]
-
-    def _verdict(ok):
-        return "✅" if ok is True else "❌"   # 命中→✅；未中或走盤→❌
-
-    ml_sum = None
-    if pick:
-        v = "✅" if hit else "❌"
-        out.append(f"獨贏（ML）：{v}")
-        ml_sum = f"獨贏命中：{v}"
-
     market = prediction.get("market")
     ah_res = _market.verify_handicap(market, hs, aws) if market else None
     ou_res = _market.verify_total(market, score, hs, aws) if market else None
 
-    ah_sum = ou_sum = None
+    def _verdict(ok):
+        return "✅" if ok is True else "❌"   # 命中→✅；未中或走盤→❌
+
+    # 市場命中：只統計「有盤口」的投注項（ML/AH/OU），走盤(None)以未中計
+    market_flags = []
+    if pick:
+        market_flags.append(hit is True)
+    if ah_res is not None:
+        market_flags.append(ah_res[1] is True)
+    if ou_res is not None:
+        market_flags.append(ou_res[1] is True)
+    m_total = len(market_flags)
+    m_hit = sum(market_flags)
+    m_pct = round(m_hit / m_total * 100) if m_total else 0
+
+    out += [_DREAM_DIV, "💰 台灣運彩投注"]
+    if m_total:
+        out.append(f"🎯命中：{m_hit}/{m_total}（{m_pct}%）")
+    if pick:
+        out.append(f"獨贏（ML）：{'✅' if hit else '❌'}")
     if ah_res is not None:
         label, ok = ah_res
         out.append(f"讓分（AH）（{label}）：{_verdict(ok)}")
-        ah_sum = f"讓分（AH）：{_verdict(ok)}"
     if ou_res is not None:
         out.append(f"大小（O/U）（線{market.get('over_under')}）：{_verdict(ou_res[1])}")
-        ou_sum = f"大小（O/U）：{_verdict(ou_res[1])}"
 
-    # 單場結論（同樣只用 中/錯/退；無資料列略過）
+    # 單場結論：模型準度（比分）與投注準度（市場）分層呈現，刻意不混成單一 overall。
     out += [_DREAM_DIV, "📌 單場結論"]
     if score_hit_line:
         out.append(score_hit_line)
     if tg_hit_line:
         out.append(tg_hit_line)
-    for s in (ml_sum, ah_sum, ou_sum):
-        if s:
-            out.append(s)
+    if m_total:
+        out.append(f"市場命中：{m_hit}/{m_total}（{m_pct}%）")
     return "\n".join(out)
 
 
@@ -472,7 +477,7 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         return rows
 
     def _wp_line(probs):
-        return " / ".join(_wp_rows(probs))
+        return " ｜ ".join(_wp_rows(probs))
 
     out = [
         "🎯 精算師預測系統",
