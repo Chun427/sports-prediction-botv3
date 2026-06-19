@@ -377,16 +377,19 @@
   },
   "3530063d3d9cd6eb5811962deca7c6ed": {
     "early": true,
-    "updated_at": "2026-06-19T14:53:44+08:00"
+    "updated_at": "2026-06-20T05:36:30+08:00",
+    "post": true
   },
   "065b3573e875f8d23803357f73e5b99e": {
     "early": true,
-    "updated_at": "2026-06-20T02:24:57+08:00",
-    "pre": true
+    "updated_at": "2026-06-20T05:36:31+08:00",
+    "pre": true,
+    "post": true
   },
   "4cd769aa7bae0ad9762bd69b80ef2903": {
     "early": true,
-    "updated_at": "2026-06-19T18:17:00+08:00"
+    "updated_at": "2026-06-20T05:36:29+08:00",
+    "pre": true
   },
   "2969ea2e73c33f58b97b82fe562cf617": {
     "early": true,
