@@ -180,10 +180,11 @@ def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> 
         f"{home} 🆚 {away}",
     ]
 
-    # 1. 比分 5 組（僅 Poisson 類有；非 Poisson（NBA）整段略過，不顯示 N/A）
+    # 1. 比分 5 組（僅 Poisson 類 FIFA/MLB 有；NBA 等非 Poisson → 整段隱藏，不顯示 N/A/假比分）
+    _is_scoreline_sport = str(prediction.get("sport", "")).upper() in ("FIFA", "MLB")
     sl = (score.get("top_scorelines") or [])[:5]
     score_hit = score_total = 0
-    score_available = bool(sl and has_score)
+    score_available = bool(_is_scoreline_sport and sl and has_score)
     if score_available:
         score_total = len(sl)
         score_hit = sum(1 for s in sl if s.get("home") == hs and s.get("away") == aws)
@@ -499,6 +500,8 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     def _wp_line(probs):
         return " ｜ ".join(_wp_rows(probs))
 
+    _is_scoreline_sport = str(sport).upper() in ("FIFA", "MLB")  # Poisson 比分僅適用低比分運動；NBA 等整段隱藏
+
     out = [
         "🎯 精算師預測系統",
         _title2,
@@ -513,17 +516,17 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         "",
         "蒙特卡羅模擬勝率",
         _wp_line(mc),
-        _DREAM_DIV,
-        "🏆 最可能出現的比分",
     ]
     medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
-    tops = score.get("top_scorelines") or []
-    for i in range(5):
-        if i < len(tops):
-            s = tops[i]
-            out.append(f"{medals[i]} {away} {s['away']}–{s['home']} {home}（{s['prob'] * 100:.1f}%）")
-        else:
-            out.append(f"{medals[i]} N/A")
+    if _is_scoreline_sport:                 # NBA 等非 Poisson → 不顯示比分區塊（不留 N/A、不顯示假比分）
+        tops = score.get("top_scorelines") or []
+        out += [_DREAM_DIV, "🏆 最可能出現的比分", ""]
+        for i in range(5):
+            if i < len(tops):
+                s = tops[i]
+                out.append(f"{medals[i]} {away} {s['away']}–{s['home']} {home}（{s['prob'] * 100:.1f}%）")
+            else:
+                out.append(f"{medals[i]} N/A")
 
     # 台灣運彩方向 + 勝率排序（V1-style：MC argmax / 由高到低排序）── additive、純顯示。
     # 只用 mc 實際存在的 key（NBA 只有 home/away，不補假和局）；不影響 best_pick / Kelly / edge。
@@ -563,7 +566,7 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
         out += [_DREAM_DIV] + _tg
 
     out += [
-        _DREAM_DIV, "💰 台灣運彩實戰建議",
+        _DREAM_DIV, "💰 台灣運彩實戰建議", "",
         f"🔮【主推】{main}",
         f"💎【次要】{ou_pick}",
         f"⭐【備選】{hcap_pick}",
