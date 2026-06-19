@@ -17,75 +17,74 @@
 ### ① 賽前 40 分鐘（最終投注參考）
 ```
 🎯 精算師預測系統
-⚡ 量化預測模型（賽前 40 分鐘）
+🕐 量化預測模型（賽前 40分鐘 預測）
 ━━━━━━━━━━━━━━━━
-📅 台灣時間 06/17 08:11
-⚾ MLB
-Detroit Tigers 🆚 Houston Astros
+📅 台灣時間 06/20 06:41
+⚾️ MLB
+Detroit Tigers 🆚 Chicago White Sox
 ━━━━━━━━━━━━━━━━
-📐 去Vig真實勝率
-Houston Astros  ██████░░░░  60.7%
-Detroit Tigers  ████░░░░░░  39.3%
+📊 勝率分析
+去Vig真實勝率
+Detroit Tigers 64.5% ｜ Chicago White Sox 35.5%
+
 蒙特卡羅模擬勝率
-Houston Astros  ██████░░░░  63.1%
-Detroit Tigers  ██░░░░░░░░  24.4%
+Detroit Tigers 63.2% ｜ Chicago White Sox 24.7%
 ━━━━━━━━━━━━━━━━
 🏆 最可能出現的比分
-🥇 Detroit Tigers 3–4 Houston Astros（3.8%）
-🥈 Detroit Tigers 3–5 Houston Astros（3.8%）
-🥉 Detroit Tigers 4–4 Houston Astros（3.3%）
-4️⃣ Detroit Tigers 4–5 Houston Astros（3.3%）
-5️⃣ Detroit Tigers 2–4 Houston Astros（3.2%）
+🥇 Detroit Tigers 4-3 Chicago White Sox（3.8%）
+🥈 Detroit Tigers 5-3 Chicago White Sox（3.8%）
+🥉 Detroit Tigers 4-4 Chicago White Sox（3.3%）
+4️⃣ Detroit Tigers 5-4 Chicago White Sox（3.3%）
+5️⃣ Detroit Tigers 4-2 Chicago White Sox（3.2%）
 ━━━━━━━━━━━━━━━━
 💰 台灣運彩實戰建議
-🔮【主推】獨贏盤 → Houston Astros 勝出
+🔮【主推】獨贏盤 → Detroit Tigers 勝出
 💎【次要】總分大小 → 小分(8.5)
-⭐【備選】讓分盤 → Houston Astros(-1.5)
+⭐【備選】讓分盤 → Detroit Tigers(-1.5)
+━━━━━━━━━━━━━━━━
 📡 數據來源：AI模型+真實數據+賠率
 ⚠️ 請理性投注。
 ```
-> 註：**「⚽ 總進球數預測」只會出現在足球（FIFA）推播**；棒球（MLB）、籃球（NBA）不顯示（如上方 MLB 範例即無此區塊）。
->
+> 註：運動 icon＝⚽️ FIFA／⚾️ MLB／🏀 NBA；比分為「主隊先－客隊後」（與隊名列、勝率分析同序）。
+> 註：**「⚽ 總進球數預測」只會出現在足球（FIFA）推播**；棒球（MLB）不顯示，籃球（NBA）連「最可能出現的比分」整段都不顯示（非 Poisson）。
 > 註：**勝率區塊**——足球（FIFA）顯示**三路**（主勝｜平手｜客勝）；棒球（MLB）、籃球（NBA）顯示**兩路**（主勝｜客勝），不顯示平手。
 
 ### ② 賽前 12 小時（早盤觀察）
 與 40 分鐘版**逐字相同**，僅標題不同：
 ```
-🕐 量化預測模型（賽前 12小時預測）
+🕐 量化預測模型（賽前 12小時 預測）
 ```
 
 ### ③ 賽後結果（event-driven，逐場）
 ```
 📊 比賽結果驗證（單場）
-📅 台灣時間 06/18
-Panama vs Ghana
+📅 台灣時間 06/20
+⚾️ MLB
+Detroit Tigers 🆚 Chicago White Sox
 ━━━━━━━━━━━━━━━━
-🥅 比分預測（5組）
-🥇 Panama 0–1 Ghana ✅
-🥈 Panama 0–0 Ghana ❌
-🥉 Panama 1–1 Ghana ❌
-4️⃣ Panama 1–0 Ghana ❌
-5️⃣ Panama 0–2 Ghana ❌
-👉 命中：1 / 5
-━━━━━━━━━━━━━━━━
-⚽ 總進球數
-預測範圍：2–3 球
-實際結果：1 球
-👉 未中 ❌
+🥅 比分預測
+🎯命中：1/5 （20%）
+
+🥇 Detroit Tigers 4-3 Chicago White Sox ❌
+🥈 Detroit Tigers 5-3 Chicago White Sox ✅
+🥉 Detroit Tigers 4-4 Chicago White Sox ❌
+4️⃣ Detroit Tigers 5-4 Chicago White Sox ❌
+5️⃣ Detroit Tigers 4-2 Chicago White Sox ❌
 ━━━━━━━━━━━━━━━━
 💰 台灣運彩投注
+🎯命中：2/3 （67%）
 獨贏（ML）：✅
-讓分（AH）（主-0.2）：✅
-大小（O/U）（線2.0）：❌
+讓分（AH）（主-2.0）：❌
+大小（O/U）（線8.5）：✅
 ━━━━━━━━━━━━━━━━
 📌 單場結論
+🎯命中：3/4 （75%）
 比分命中：1/5
-總進球命中：❌
-獨贏命中：✅
-讓分（AH）：✅
-大小（O/U）：❌
+市場命中：2/3
 ```
-> 投注結果用 **✅/❌**（命中→✅、未中或走盤→❌）並標盤口（如 主-0.2 / 線2.0）。比分 5 組與總進球僅足球（FIFA）有；棒球僅比分；籃球無比分段。沒有盤口資料的投注項目直接略過（不捏造）。
+> 投注結果用 **✅/❌**（命中→✅、未中或走盤→❌）並標盤口（如 主-2.0 / 線8.5）。
+> 比分 5 組僅 Poisson 類（FIFA／MLB）有，**籃球（NBA）整段不顯示**；賽後不再顯示總進球區塊。
+> 單場結論：`🎯命中 X/4`＝｛比分(≥1組中算1)＋ML＋AH＋OU｝可用類別命中數（NBA 無比分→/3）；下方另列「比分命中 X/5」「市場命中 X/3」分層真值。沒有盤口資料的投注項目直接略過（不捏造）。
 
 ### ④ 每日戰報（取代舊 WorldCup 批次）
 ```
@@ -156,7 +155,7 @@ commit-back 狀態檔（[skip ci] update bot state）
 
 | 段別 | 觸發 | 標題 |
 |---|---|---|
-| Early 早推 | 賽前 12h（`EARLY_WINDOW_MIN=720`） | 🕐 賽前 12小時預測 |
+| Early 早推 | 賽前 12h（`EARLY_WINDOW_MIN=720`） | 🕐 賽前 12小時 預測 |
 | Pregame 最終 | 賽前 40m（`PREGAME_WINDOW_MIN=40`） | ⚡ 賽前 40 分鐘 |
 | Postgame 賽後 | 賽果 `completed=true`（逐場即時） | 📊 賽後結果 |
 
