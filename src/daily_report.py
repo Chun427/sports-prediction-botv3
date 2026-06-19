@@ -17,6 +17,7 @@ from __future__ import annotations
 import datetime as _dt
 
 import data_manager as dm
+import obs
 from constants import TW_TZ
 
 _STAGE = "daily"
@@ -112,6 +113,7 @@ def run_daily_report(pusher, *, now=None, games=None, verified=None) -> str | No
         if not st:
             continue
         if st <= now and g.get("id") not in verified_ids and (now - st) <= _dt.timedelta(hours=_STALE_HOURS):
+            obs.info("daily.skip_pending", game_id=g.get("id"), sport=g.get("sport"))
             return None
 
     today_rows = [r for r in verified if r.get("game_id") in today_ids]
@@ -125,9 +127,11 @@ def run_daily_report(pusher, *, now=None, games=None, verified=None) -> str | No
         if d and (last is None or d > last):
             last = d
     if last is not None and (now - last) < _dt.timedelta(minutes=_WAIT_MIN):
+        obs.info("daily.skip_wait30", last_verified=last.isoformat())
         return None
 
     msg = render_daily(now, today_rows)
     pusher(msg)
     dm.mark_pushed(gid, _STAGE)
+    obs.info("daily.sent", date=gid, games=len(today_rows))
     return msg
