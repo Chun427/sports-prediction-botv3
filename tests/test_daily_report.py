@@ -98,3 +98,36 @@ def test_no_today_games(monkeypatch):
     games = [{"id": "g1", "sport": "MLB", "start_time": "2026-06-10T09:00:00+08:00"}]  # 非今日
     msg = dr.run_daily_report(lambda m: None, now=_now(), games=games, verified=[])
     assert msg is None
+
+
+def test_daily_not_marked_when_send_fails_then_retries(monkeypatch):
+    """Never-Miss：daily 送出明確失敗(False) → 不 mark → 下一 tick 可重送，成功才 mark。"""
+    store = _flags(monkeypatch)
+    games = [{"id": "g1", "sport": "MLB", "start_time": "2026-06-18T09:00:00+08:00"}]
+    verified = [{"game_id": "g1", "sport": "MLB", "verified_at": "2026-06-18T12:00:00+08:00",
+                 "moneyline_hit": "true", "ah_hit": "true", "ou_hit": "", "scoreline_hit": ""}]
+    # 第一次：送出失敗(False) → 不 mark
+    sent = []
+    r1 = dr.run_daily_report(lambda m: (sent.append(m), False)[1],
+                             now=_now(), games=games, verified=verified)
+    assert r1 is None and len(sent) == 1
+    assert not any(s == dr._STAGE for (_g, s) in store)  # 未 mark → 可重送
+    # 下一 tick：送出成功(True) → mark
+    ok_sent = []
+    r2 = dr.run_daily_report(lambda m: (ok_sent.append(m), True)[1],
+                             now=_now(), games=games, verified=verified)
+    assert r2 and len(ok_sent) == 1
+    assert any(s == dr._STAGE for (_g, s) in store)  # 成功才 mark
+
+
+def test_daily_waits_for_not_yet_started_today_game(monkeypatch):
+    """完成度：今日尚有未開賽/未驗證的場 → 不可提前送（否則晚場會被 idempotent 永久鎖掉）。"""
+    _flags(monkeypatch)
+    games = [{"id": "g1", "sport": "MLB", "start_time": "2026-06-18T09:00:00+08:00"},   # 已驗
+             {"id": "g2", "sport": "MLB", "start_time": "2026-06-18T20:00:00+08:00"}]   # 今日晚場、未開賽
+    verified = [{"game_id": "g1", "sport": "MLB", "verified_at": "2026-06-18T12:00:00+08:00",
+                 "moneyline_hit": "true", "ah_hit": "", "ou_hit": "", "scoreline_hit": ""}]
+    sent = []
+    msg = dr.run_daily_report(lambda m: (sent.append(m), True)[1],
+                              now=_now(), games=games, verified=verified)
+    assert msg is None and sent == []  # g2 未打完 → 等，不提前送
