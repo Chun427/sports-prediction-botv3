@@ -32,6 +32,7 @@ import shadow_logger
 from constants import (
     ENV_ODDS_API_KEY_1,
     ENV_TG_CHAT,
+    ENV_TG_ADMIN_CHAT,
     ENV_TG_TOKEN,
     PENDING_STALE_HOURS,
     POOL_FETCH_HOURS_AHEAD,
@@ -448,7 +449,7 @@ def main(argv: list[str] | None = None) -> int:
     # 獨立於 match push / tick 核心：只讀 verified_history + weekly_games。
     try:
         import daily_report
-        daily_pusher = notifier.make_pusher(dry_run, renderer=lambda m: m, **tg)
+        daily_pusher = notifier.make_postgame_pusher(dry_run, **tg)
         daily_report.run_daily_report(daily_pusher, now=now)
     except Exception as exc:  # noqa: BLE001 — addon 不得影響核心
         obs.error("daily_report.error", err=str(exc))
@@ -461,6 +462,19 @@ def main(argv: list[str] | None = None) -> int:
         awards_push.run_awards_push(aw_pusher, now=now)
     except Exception as exc:  # noqa: BLE001 — addon 不得影響核心
         obs.error("awards.error", err=str(exc))
+
+    # ── 漏推對帳告警（Phase1-E；addon, guarded, opt-in）──
+    # 偵測「賽前(12h/40m 皆漏) / 賽後(過期未推)」→ 發 admin 告警；每場每類 idempotent。
+    # 純讀 state，不改任何推播/驗證邏輯；未設 TG_ADMIN_CHAT → 完全 no-op。
+    try:
+        admin_chat = os.getenv(ENV_TG_ADMIN_CHAT)
+        if admin_chat:
+            import push_reconcile
+            admin_sender = notifier.make_postgame_pusher(
+                dry_run, token=os.getenv(ENV_TG_TOKEN), chat=admin_chat)
+            push_reconcile.run_push_reconcile(admin_sender, now=now)
+    except Exception as exc:  # noqa: BLE001 — addon 不得影響核心
+        obs.error("push_reconcile.error", err=str(exc))
 
     # ── Production Readiness Gate（唯讀；只報告，不影響核心）──
     try:
