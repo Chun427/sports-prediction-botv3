@@ -8,7 +8,21 @@
 
 > 狀態：**Production（已封版，進入 observation mode）**。核心 / 三推播 / 每日戰報 / 驗證流程皆完成且運行。測試 **230 passed**。
 > 支援：⚾ MLB · 🏀 NBA · ⚽ FIFA。
-> 註：`xgboost` 列於 requirements 但**目前未啟用**（保留為未來擴充），現行預測不依賴它。
+
+-----
+
+## 🎯 系統定位
+
+> **即時統計 + 機率推論 + 賽後驗證系統。** 本系統不使用機器學習訓練模型（No ML training pipeline），不包含 XGBoost / Neural Network / Deep Learning。
+>
+> 所有預測基於：
+> - 去 Vig 市場機率轉換（Implied Probability）
+> - Poisson / 常態分布模型（比分與總分）
+> - Monte Carlo 模擬（勝率分布）
+> - Edge 計算（期望值差）
+> - Truth Gate 賽後驗證（verified_history）
+>
+> `xgboost` 已保留於 requirements.txt 作為未來實驗性擴展，**目前未啟用且未被任何主流程引用**。
 
 -----
 
