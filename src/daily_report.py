@@ -112,8 +112,12 @@ def run_daily_report(pusher, *, now=None, games=None, verified=None) -> str | No
         st = _parse(g.get("start_time"))
         if not st:
             continue
-        if st <= now and g.get("id") not in verified_ids and (now - st) <= _dt.timedelta(hours=_STALE_HOURS):
-            obs.info("daily.skip_pending", game_id=g.get("id"), sport=g.get("sport"))
+        verified_done = g.get("id") in verified_ids
+        stale = (now - st) > _dt.timedelta(hours=_STALE_HOURS)  # 開賽逾 12h → 視為過期，不再等
+        # settled = 已驗證 OR 已過期；只要還有「未 settled」的今日場（含尚未開賽的晚場）→ 等
+        if not verified_done and not stale:
+            obs.info("daily.skip_pending", game_id=g.get("id"), sport=g.get("sport"),
+                     started=st <= now)
             return None
 
     today_rows = [r for r in verified if r.get("game_id") in today_ids]
@@ -131,7 +135,10 @@ def run_daily_report(pusher, *, now=None, games=None, verified=None) -> str | No
         return None
 
     msg = render_daily(now, today_rows)
-    pusher(msg)
-    dm.mark_pushed(gid, _STAGE)
+    ok = pusher(msg)
+    if ok is False:  # 明確送出失敗 → 不 mark → 下一 tick 會重送（Never-Miss Recovery）
+        obs.warn("daily.push_failed", date=gid)
+        return None
+    dm.mark_pushed(gid, _STAGE)  # send 成功才 mark
     obs.info("daily.sent", date=gid, games=len(today_rows))
     return msg
