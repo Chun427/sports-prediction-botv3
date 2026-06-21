@@ -338,13 +338,18 @@ def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
         for gid in ids:
             pred = (preds.get(gid) or {}).get("prediction", {})
             r = scores.get(gid)
-            if r is None or not r.get("completed"):
-                continue  # 未完賽 → 等下個 tick
+            if r is None:
+                obs.info("postgame.no_result", game_id=gid, sport=sport)  # API 未返回此場賽果 → 等
+                continue
+            if not r.get("completed"):
+                obs.info("postgame.not_completed", game_id=gid, sport=sport)  # 尚未完賽 → 等下個 tick
+                continue
             if dm.is_pushed(gid, "post"):
                 dm.remove_prediction(gid)  # idempotent 清理
                 continue
             v = verify(pred, r)
             if v is None:
+                obs.warn("postgame.verify_none", game_id=gid, sport=sport)  # 完賽但缺分數 → 無法驗證
                 continue
             try:
                 ok = post_pusher(notifier.render_postgame_eval(v, pred, r))
@@ -458,7 +463,7 @@ def main(argv: list[str] | None = None) -> int:
     # 獨立於 match push / tick 核心：build_awards 走 registry→fetch→validate（market 唯一真相）。
     try:
         import awards_push
-        aw_pusher = notifier.make_pusher(dry_run, renderer=lambda m: m, **tg)
+        aw_pusher = notifier.make_postgame_pusher(dry_run, **tg)
         awards_push.run_awards_push(aw_pusher, now=now)
     except Exception as exc:  # noqa: BLE001 — addon 不得影響核心
         obs.error("awards.error", err=str(exc))
