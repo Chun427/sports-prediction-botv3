@@ -582,8 +582,9 @@
   },
   "dfc5202cf1b8ae002cf952cd04f235b9": {
     "early": true,
-    "updated_at": "2026-06-21T11:30:48+08:00",
-    "pre": true
+    "updated_at": "2026-06-21T15:03:13+08:00",
+    "pre": true,
+    "post": true
   },
   "awards-20260621": {
     "awards": true,
@@ -592,5 +593,45 @@
   "73529a242e319a86bf3d00ddb4accc37": {
     "early": true,
     "updated_at": "2026-06-21T13:26:57+08:00"
+  },
+  "3385f13848d741d7dbed13f55c4e5406": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:06+08:00"
+  },
+  "c489d951af8ab8f1fd4ae78c8d3ecfd0": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:07+08:00"
+  },
+  "5b9a17363d625eecc39a522f99d7e6b5": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:08+08:00"
+  },
+  "52936746b7bd1b536bb6d7d2bb159424": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:08+08:00"
+  },
+  "a14b7bea51fe65613c31f6f978b654bf": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:09+08:00"
+  },
+  "ec4cae25ad07349a66d527ea9274b717": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:09+08:00"
+  },
+  "6c9cb91ce383f581ac4ff00dd0d3248d": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:10+08:00"
+  },
+  "79c9ee89726e9d404bcade277b077b42": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:11+08:00"
+  },
+  "af71fc71bb598645a13d40236b310307": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:11+08:00"
+  },
+  "5f92f257386ec5bf7c6e2498a21f3a61": {
+    "early": true,
+    "updated_at": "2026-06-21T15:03:12+08:00"
   }
 }
