@@ -26,7 +26,7 @@ import total_goals as _total_goals
 import market_lines as _market
 from constants import (
     PREGAME_TEMPLATE_TAG, POSTGAME_TEMPLATE_TAG, TELEGRAM_API_BASE, TG_RETRY,
-    PREGAME_WINDOW_MIN, EARLY_WINDOW_MIN,
+    PREGAME_WINDOW_MIN, EARLY_WINDOW_MIN, CORRECT_SCORE_SPORTS,
 )
 from constants import use_v1_decision
 
@@ -181,7 +181,7 @@ def render_postgame_eval(verification: dict, prediction: dict, result: dict) -> 
     ]
 
     # 1. 比分（Poisson 類 FIFA/MLB 才有；NBA 整段隱藏）。命中以「中／沒中」二元計：5 組任一中 → 1/1，否則 0/1。
-    _is_scoreline_sport = str(prediction.get("sport", "")).upper() in ("FIFA", "MLB")
+    _is_scoreline_sport = str(prediction.get("sport", "")).upper() in CORRECT_SCORE_SPORTS
     sl = (score.get("top_scorelines") or [])[:5]
     score_available = bool(_is_scoreline_sport and sl and has_score)
     score_bin = 0
@@ -502,7 +502,7 @@ def render_pregame_lite(prediction: dict, header_kind: str = "final") -> str:
     def _wp_line(probs):
         return " ｜ ".join(_wp_rows(probs))
 
-    _is_scoreline_sport = str(sport).upper() in ("FIFA", "MLB")  # Poisson 比分僅適用低比分運動；NBA 等整段隱藏
+    _is_scoreline_sport = str(sport).upper() in CORRECT_SCORE_SPORTS  # 只有 FIFA 有正確比分投注；MLB/NBA 不顯示
 
     out = [
         "🎯 精算師預測系統",
