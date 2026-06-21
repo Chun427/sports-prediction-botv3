@@ -1763,5 +1763,114 @@
       "phase": "early_12h"
     },
     "pre_pushed_at": "2026-06-21T18:05:17+08:00"
+  },
+  "08abb04c1fb579ea1862e99efa0b8947": {
+    "prediction": {
+      "game_id": "08abb04c1fb579ea1862e99efa0b8947",
+      "sport": "MLB",
+      "home": "Philadelphia Phillies",
+      "away": "New York Mets",
+      "start_time": "2026-06-22T07:21:00+08:00",
+      "market": {
+        "asian_handicap": -1.5,
+        "over_under": 8.0,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-21T12:29:40.895579+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "home": 0.6375,
+        "away": 0.3625
+      },
+      "best_odds": {
+        "home": 1.53,
+        "away": 2.71
+      },
+      "edge": {
+        "home": -0.0246,
+        "away": -0.0176
+      },
+      "best_pick": null,
+      "avg_overround": 0.0382,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-21T20:29:40+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "MLB",
+        "lambda_home": 4.75,
+        "lambda_away": 3.25,
+        "expected_total": 8.0,
+        "supremacy": 1.5,
+        "outcome_probs": {
+          "home": 0.6366,
+          "draw": 0.1258,
+          "away": 0.2376
+        },
+        "top_scorelines": [
+          {
+            "home": 4,
+            "away": 3,
+            "prob": 0.0408
+          },
+          {
+            "home": 5,
+            "away": 3,
+            "prob": 0.0387
+          },
+          {
+            "home": 4,
+            "away": 2,
+            "prob": 0.0376
+          },
+          {
+            "home": 5,
+            "away": 2,
+            "prob": 0.0357
+          },
+          {
+            "home": 3,
+            "away": 3,
+            "prob": 0.0343
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.6417,
+          "draw": 0.125,
+          "away": 0.2333
+        },
+        "top_scorelines": [
+          {
+            "home": 4,
+            "away": 3,
+            "prob": 0.0402
+          },
+          {
+            "home": 5,
+            "away": 3,
+            "prob": 0.0391
+          },
+          {
+            "home": 4,
+            "away": 2,
+            "prob": 0.0387
+          },
+          {
+            "home": 3,
+            "away": 3,
+            "prob": 0.0345
+          },
+          {
+            "home": 5,
+            "away": 2,
+            "prob": 0.0335
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-21T20:29:40+08:00"
   }
 }
