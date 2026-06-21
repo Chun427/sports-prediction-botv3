@@ -1,6 +1,6 @@
-# RELEASE NOTES — V3 Final（Production Baseline）
+# RELEASE NOTES — V0 Final（Production Baseline）
 
-> 狀態：**Production Baseline / Freeze**。此版本為穩定基準線；之後 V4 開發一律 **additive overlay**，不得修改下列 Core。
+> 狀態：**Production Baseline / Freeze**。此版本為穩定基準線；之後回饋觀測層開發一律 **additive overlay**，不得修改下列 Core。
 > 測試：**230 passed**　|　Release Gate：**ready=true / score=100**
 
 ---
@@ -47,7 +47,7 @@
 
 - **錦標賽 bracket 模擬 / 冠軍機率模擬**：永久不做（無賽程結構 → 會造假）。
 - **Elo / xG / 球員 impact / Best XI / MVP 模型**：永久不做（系統無球員層級資料 → 會造假）。market 是唯一真相。
-- **週報 / 賽季累積報**：`weekly_report` 已寫但未接 push（orphan）；留待 V4 報表層。
+- **週報 / 賽季累積報**：`weekly_report` 已寫但未接 push（orphan）；留待回饋觀測層報表。
 - **獎項 push 真實上線**：待 Odds API outright 盤確認後再接（極小 additive）。
 - **清理項（不急）**：dormant `worldcup_batch.py` + 其測試、誤放的 `tests/futures_validation.py`、`tests/test postgame eval.py`、dead 常數、`download`→`.gitignore`。
 
@@ -59,5 +59,5 @@
 
 ---
 
-## 🧭 後續 V4 方向（詳見 V4_ROADMAP.md）
+## 🧭 後續方向（詳見 ROADMAP.md）
 Audit Engine → Calibration → Bias Detector → Learning Signal → Auto Report。全部 additive，讀 `normalized_verified_view()`，不碰 Core。
