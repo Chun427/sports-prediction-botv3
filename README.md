@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white)
 
-> 狀態：**v3 stable baseline（Production / Observation Mode）**。核心 / 三推播 / 每日戰報 / 賽後驗證 / 漏推對帳 流程皆完成且運行。測試 **248 passed**。工程與維運細節見 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)。
+> 狀態：**v0 stable baseline（Production / Observation Mode）**。核心 / 三推播 / 每日戰報 / 賽後驗證 / 漏推對帳 流程皆完成且運行。測試 **248 passed**。工程與維運細節見 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)。
 > 支援：⚾ MLB · 🏀 NBA · ⚽ FIFA。
 
 -----
@@ -28,33 +28,41 @@
 
 ## 📱 推播畫面
 
-### ① 賽前 40 分鐘（最終投注參考）
+### ① 賽前 12 小時（早盤觀察，⚽ FIFA 範例）
 ```
 🎯 精算師預測系統
-🕐 量化預測模型（賽前 40分鐘 預測）
+🕐 量化預測模型（賽前 12小時 預測）
 ━━━━━━━━━━━━━━━━
-📅 台灣時間 06/20 06:41
-⚾️ MLB
-Detroit Tigers 🆚 Chicago White Sox
+📅 台灣時間 06/22 03:00
+⚽️ FIFA
+Belgium 🆚 Iran
 ━━━━━━━━━━━━━━━━
 📊 勝率分析
 去Vig真實勝率
-Detroit Tigers 64.5% ｜ Chicago White Sox 35.5%
+Belgium 67.0% ｜ 平手 20.5% ｜ Iran 12.5%
 
 蒙特卡羅模擬勝率
-Detroit Tigers 63.2% ｜ Chicago White Sox 24.7%
+Belgium 67.6% ｜ 平手 20.7% ｜ Iran 11.7%
 ━━━━━━━━━━━━━━━━
 🏆 最可能出現的比分
-🥇 Detroit Tigers 4-3 Chicago White Sox（3.8%）
-🥈 Detroit Tigers 5-3 Chicago White Sox（3.8%）
-🥉 Detroit Tigers 4-4 Chicago White Sox（3.3%）
-4️⃣ Detroit Tigers 5-4 Chicago White Sox（3.3%）
-5️⃣ Detroit Tigers 4-2 Chicago White Sox（3.2%）
+🥇 Belgium 1-0 Iran（15.4%）
+🥈 Belgium 2-0 Iran（14.4%）
+🥉 Belgium 1-1 Iran（9.6%）
+4️⃣ Belgium 2-1 Iran（9.0%）
+5️⃣ Belgium 3-0 Iran（9.0%）
+━━━━━━━━━━━━━━━━
+⚽ 總進球數預測
+🥇 2–3球（47%）
+🥈 0–1球（29%）
+🥉 4–5球（20%）
+4️⃣ 6+球（4%）
+🎯 最可能：2–3球
+📊 平均：2.50球
 ━━━━━━━━━━━━━━━━
 💰 台灣運彩實戰建議
-🔮【主推】獨贏盤 → Detroit Tigers 勝出
-💎【次要】總分大小 → 小分(8.5)
-⭐【備選】讓分盤 → Detroit Tigers(-1.5)
+🔮【主推】獨贏盤 → Belgium 勝出
+💎【次要】總分大小 → 小分(2.5)
+⭐【備選】讓分盤 → Belgium(-1.2)
 ━━━━━━━━━━━━━━━━
 📡 數據來源：AI模型+真實數據+賠率
 ⚠️ 請理性投注。
@@ -63,42 +71,93 @@ Detroit Tigers 63.2% ｜ Chicago White Sox 24.7%
 > 註：**「⚽ 總進球數預測」與「最可能出現的比分」只會出現在足球（FIFA）推播**；台彩 MLB／NBA 無「正確比分」投注玩法，**棒球（MLB）、籃球（NBA）皆不顯示比分區塊**（僅 獨贏／讓分／大小）。
 > 註：**勝率區塊**——足球（FIFA）顯示**三路**（主勝｜平手｜客勝）；棒球（MLB）、籃球（NBA）顯示**兩路**（主勝｜客勝），不顯示平手。
 
-### ② 賽前 12 小時（早盤觀察）
-與 40 分鐘版**逐字相同**，僅標題不同：
+### ② 賽前 40 分鐘（最終投注參考）
+版型與 12 小時早盤**逐字相同**，僅標題不同：
 ```
-🕐 量化預測模型（賽前 12小時 預測）
+🕐 量化預測模型（賽前 40分鐘 預測）
 ```
+
+### ⚾ MLB 賽前範例（無比分）
+```
+🎯 精算師預測系統
+🕐 量化預測模型（賽前 40分鐘 預測）
+━━━━━━━━━━━━━━━━
+📅 台灣時間 06/22 08:00
+⚾️ MLB
+Detroit Tigers 🆚 Chicago White Sox
+━━━━━━━━━━━━━━━━
+📊 勝率分析
+去Vig真實勝率
+Detroit Tigers 63.2% ｜ Chicago White Sox 24.7%
+
+蒙特卡羅模擬勝率
+Detroit Tigers 63.2% ｜ Chicago White Sox 24.7%
+━━━━━━━━━━━━━━━━
+💰 台灣運彩實戰建議
+🔮【主推】獨贏盤 → Detroit Tigers 勝出
+💎【次要】總分大小 → 小分(7.8)
+⭐【備選】讓分盤 → Detroit Tigers(-1.2)
+━━━━━━━━━━━━━━━━
+📡 數據來源：AI模型+真實數據+賠率
+⚠️ 請理性投注。
+```
+
+### 🏀 NBA 賽前範例（無比分）
+```
+🎯 精算師預測系統
+🕐 量化預測模型（賽前 40分鐘 預測）
+━━━━━━━━━━━━━━━━
+📅 台灣時間 06/22 08:00
+🏀 NBA
+Boston Celtics 🆚 Miami Heat
+━━━━━━━━━━━━━━━━
+📊 勝率分析
+去Vig真實勝率
+Boston Celtics 68.1% ｜ Miami Heat 31.9%
+
+蒙特卡羅模擬勝率
+Boston Celtics 68.1% ｜ Miami Heat 31.9%
+━━━━━━━━━━━━━━━━
+💰 台灣運彩實戰建議
+🔮【主推】獨贏盤 → Boston Celtics 勝出
+💎【次要】總分大小 → 大分(221.5)
+⭐【備選】讓分盤 → Boston Celtics(-5.5)
+━━━━━━━━━━━━━━━━
+📡 數據來源：AI模型+真實數據+賠率
+⚠️ 請理性投注。
+```
+> 註：**MLB／NBA 為兩路勝率（無平手）**，**無「最可能出現的比分」、無「總進球數預測」、無比分區塊**；僅 獨贏（ML）／大小（O/U）／讓分（AH）。比分相關區塊只有 ⚽ FIFA 才有。
 
 ### ③ 賽後結果（event-driven，逐場）
 ```
 📊 比賽結果驗證（單場）
-📅 台灣時間 06/20
-⚾️ MLB
-Detroit Tigers 🆚 Chicago White Sox
+📅 台灣時間 06/21
+⚽️ FIFA
+Tunisia 🆚 Japan
 ━━━━━━━━━━━━━━━━
 📋 比分預測
-🎯命中：1/1（100%）
-🥇 Detroit Tigers 4-3 Chicago White Sox ❌
-🥈 Detroit Tigers 5-3 Chicago White Sox ✅
-🥉 Detroit Tigers 4-4 Chicago White Sox ❌
-4️⃣ Detroit Tigers 5-4 Chicago White Sox ❌
-5️⃣ Detroit Tigers 4-2 Chicago White Sox ❌
+🎯命中：0/1（0%）
+🥇 Tunisia 0-1 Japan ❌
+🥈 Tunisia 0-2 Japan ❌
+🥉 Tunisia 1-1 Japan ❌
+4️⃣ Tunisia 1-2 Japan ❌
+5️⃣ Tunisia 0-0 Japan ❌
 ━━━━━━━━━━━━━━━━
 💰 台灣運彩投注
 🎯命中：2/3（67%）
-獨贏（ML）：✅ Detroit Tigers 勝出
-大小（O/U）：✅ 小分（8.5）
-讓分（AH）：❌ Detroit Tigers（主-2.0）
+獨贏（ML）：✅ Japan 勝出
+大小（O/U）：❌ 小分（2.5）
+讓分（AH）：✅ Japan（客-1.0）
 ━━━━━━━━━━━━━━━━
 📌 單場結論
-🎯命中：3/4（75%）
-比分命中：1/1（100%）
+🎯命中：2/4（50%）
+比分命中：0/1（0%）
 盤口命中：2/3（67%）
 ```
 > 投注結果用 **✅/❌**（命中→✅、未中或走盤→❌），並標推薦內容（ML 推哪隊／OU 大小＋線／AH 哪隊＋讓分）。
 > **比分命中以「中／沒中」二元計**：5 組任一中 → 1/1，否則 0/1（不再計 X/5）。
 > 比分區塊**僅足球（FIFA）有**（台彩有正確比分玩法）；**棒球（MLB）、籃球（NBA）整段不顯示**；賽後不顯示總進球區塊。
-> 單場結論：`🎯命中 X/4`＝｛比分(二元，1類)＋ML＋AH＋OU｝可用類別命中數（NBA 無比分→/3）；下方另列「比分命中 X/1」「盤口命中 X/3」分層真值。無盤口的投注項目直接略過（不捏造）。
+> 單場結論：FIFA 為 `🎯命中 X/4`＝｛比分(二元,1類)＋ML＋AH＋OU｝；**MLB／NBA 無正確比分玩法 → `X/3`**（僅 ML＋AH＋OU，不顯示比分區塊、不列「比分命中」）。比分命中僅 FIFA 另列「X/1」；盤口命中列「X/3」。無盤口的投注項目直接略過（不捏造）。
 
 ### ④ 每日戰報
 ```
@@ -108,6 +167,7 @@ Detroit Tigers 🆚 Chicago White Sox
 獨贏 6/8（75%）
 讓分 3/8（38%）
 大小 5/8（63%）
+比分 1/3（33%）
 ━━━━━━━━
 ⚽ 足球（3場）
 🎯 整體命中率 6/12（50%）
@@ -186,17 +246,17 @@ commit-back 狀態檔（[skip ci] update bot state）
 
 - **⚽ 總進球數（單場）**：只讀既有 `lambda_home/away`，Poisson(λ_total) 分桶，依機率排序顯示。**僅足球（FIFA）顯示**；棒球（MLB）、籃球（NBA）不顯示（總進球分布僅對足球有意義）。不改 score_model/MC/Edge。
 - **📅 每日戰報：當天賽事全驗證完 + 距最近驗證 ≥30 分，推一則「本日總命中＋各球類命中率」；只讀 verified_history + weekly_games；每日冪等（flags `daily-YYYYMMDD`）；掛 `main()` tick 之後，不碰逐場賽後。`worldcup_batch.py` 已 dormant（`main()` 不再呼叫）。
-- **📊 Audit Engine（V4 Phase 2 · 可觀測層）**：唯讀 KPI 報表（依運動/盤口分組命中率、平均報酬、樣本不足警示）；只讀 `normalized_verified_view()`，**不碰核心、不寫狀態、不進推播路徑**。
+- **📊 Audit Engine（Phase 2 · 可觀測層）**：唯讀 KPI 報表（依運動/盤口分組命中率、平均報酬、樣本不足警示）；只讀 `normalized_verified_view()`，**不碰核心、不寫狀態、不進推播路徑**。
 
 -----
 
-## 🧠 V4 資料回饋層（Feedback / Observability）
+## 🧠 回饋觀測層（Feedback / Observability）
 
-V3 是執行層、已凍結；V4 在其上**加一層唯讀的資料回饋與觀測**，不碰任何核心模型：
+執行核心（本專案版本 **V0**）已凍結；其上**加一層唯讀的資料回饋與觀測**，不碰任何核心模型：
 
 - **Phase 1 — 資料合約層（truth）**：`verified_history.csv` 擴充為 **21 欄完整回饋事件**（ML / AH / OU / 比分 / 總進球 / 信心 / Edge / 預期vs實際總分 / phase…），由 `verified_enrich.py` 在賽後驗證時補寫（additive、缺值留空、不 backfill）。`normalized_verified_view()` 為分析**唯一入口**（統一 schema、缺值＝None）。
 - **Phase 2 — 智能/觀測層（analysis）**：`audit_engine.py` 為 baseline KPI；`bias_detector / calibration_tracker / learning_signal` 為設計就緒、**待資料累積（每運動 ≥100 場）才實作**。
-- **治理**：所有分析只讀不改；任何模型調整需 Audit→回測→人工確認（詳見 `V4_FEEDBACK_DESIGN.md`、`V4_PHASE2_ARCHITECTURE.md`）。
+- **治理**：所有分析只讀不改；任何模型調整需 Audit→回測→人工確認（詳見 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)）。
 
 -----
 
@@ -207,7 +267,7 @@ V3 是執行層、已凍結；V4 在其上**加一層唯讀的資料回饋與觀
 | `weekly_games.json` | 48h 賽事池 + 三盤口賠率快取 |
 | `flags.json` | 推播狀態（每場 early / pre / post） |
 | `predictions.json` | 預測快照（賽後驗證唯一素材來源） |
-| `verified_history.csv` | 賽後完整回饋紀錄（**V4：21 欄 truth layer**；分析經 `normalized_verified_view()`） |
+| `verified_history.csv` | 賽後完整回饋紀錄（**21 欄 truth layer**；分析經 `normalized_verified_view()`） |
 | `key_state.json` | Odds API 金鑰輪替 / cooldown |
 | `worldcup_state.json` | （已停用）舊 WorldCup batch 狀態；每日戰報改用 flags `daily-YYYYMMDD` |
 
