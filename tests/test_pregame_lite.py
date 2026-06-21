@@ -23,6 +23,7 @@ PRED_2WAY = {
     "avg_overround": 0.04, "model": "market_implied_v1", "generated_at": "x",
 }
 PRED_NO_PICK = {**PRED_2WAY, "best_pick": None}
+PRED_FIFA = {**PRED_2WAY, "sport": "FIFA"}  # 比分（正確比分）為 FIFA-only，比分相關契約用此
 
 
 def test_window_minutes_is_dynamic_not_hardcoded():
@@ -32,7 +33,7 @@ def test_window_minutes_is_dynamic_not_hardcoded():
 
 
 def test_all_fixed_sections_present():
-    out = nf.render_pregame_lite(PRED_2WAY)
+    out = nf.render_pregame_lite(PRED_FIFA)  # 含比分的完整契約 → FIFA
     for header in [
         "🎯 精算師預測系統", "🕐 量化預測模型", "去Vig真實勝率", "蒙特卡羅模擬勝率",
         "🏆 最可能出現的比分", "💰 台灣運彩實戰建議",
@@ -40,6 +41,13 @@ def test_all_fixed_sections_present():
         "📡 數據來源：AI模型+真實數據+賠率", "⚠️ 請理性投注。",
     ]:
         assert header in out, f"缺少固定 section: {header}"
+
+
+def test_mlb_nba_no_scoreline_section():
+    """台彩 MLB/NBA 無正確比分投注 → 賽前推播不顯示比分區塊。"""
+    for sport in ("MLB", "NBA"):
+        out = nf.render_pregame_lite({**PRED_2WAY, "sport": sport})
+        assert "🏆 最可能出現的比分" not in out, f"{sport} 不應顯示比分"
 
 
 def test_devig_real_values():
@@ -61,7 +69,7 @@ def test_handicap_block_removed():
 
 
 def test_missing_model_shows_na_not_fabricated():
-    out = nf.render_pregame_lite(PRED_2WAY)
+    out = nf.render_pregame_lite(PRED_FIFA)  # 比分區塊為 FIFA-only
     assert "蒙特卡羅模擬勝率" in out
     assert "Tigers N/A" in out and "Mariners N/A" in out
     assert "🥇 N/A" in out
