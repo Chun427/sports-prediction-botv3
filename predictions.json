@@ -1647,5 +1647,121 @@
       "phase": "early_12h"
     },
     "pre_pushed_at": "2026-06-21T17:34:21+08:00"
+  },
+  "852a3abe6d46820720febc0fedebff9a": {
+    "prediction": {
+      "game_id": "852a3abe6d46820720febc0fedebff9a",
+      "sport": "FIFA",
+      "home": "Uruguay",
+      "away": "Cape Verde",
+      "start_time": "2026-06-22T06:00:00+08:00",
+      "market": {
+        "asian_handicap": -1.0,
+        "over_under": 2.5,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-21T10:05:17.625872+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "draw": 0.228,
+        "away": 0.1136,
+        "home": 0.6584
+      },
+      "best_odds": {
+        "home": 1.46,
+        "away": 9.0,
+        "draw": 4.25
+      },
+      "edge": {
+        "draw": -0.031,
+        "away": 0.0227,
+        "home": -0.0388
+      },
+      "best_pick": {
+        "outcome": "away",
+        "edge": 0.0227,
+        "odds": 9.0
+      },
+      "avg_overround": 0.0501,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-21T18:05:17+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 1.75,
+        "lambda_away": 0.75,
+        "expected_total": 2.5,
+        "supremacy": 1.0,
+        "outcome_probs": {
+          "home": 0.6128,
+          "draw": 0.2308,
+          "away": 0.1564
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.1436
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.1257
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1077
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0943
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "prob": 0.0821
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.6157,
+          "draw": 0.2276,
+          "away": 0.1567
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.1442
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.131
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1045
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0935
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "prob": 0.083
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-21T18:05:17+08:00"
   }
 }
