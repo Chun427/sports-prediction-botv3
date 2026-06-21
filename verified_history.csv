@@ -108,3 +108,4 @@ verified_at,game_id,sport,winner,pick_outcome,pick_hit,moneyline_hit,realized_re
 2026-06-22T06:35:09+08:00,e8be77d7e0434ff6005f40b113e2d7af,MLB,away,away,True,True,0.74,0.5664,market_implied_v1,True,False,0,,-0.0145,0.6152,0.6152,0.5664,12.0,14,early_12h
 2026-06-22T06:35:09+08:00,71c529205c80b00be4370b29fc54ecb5,MLB,home,home,True,True,0.8300000000000001,0.5364,market_implied_v1,True,True,1,,-0.0184,0.6548,0.6548,0.5364,6.5,4,pre_match_40m
 2026-06-22T06:35:10+08:00,7f1c3f57ba34142cb47323252198021a,MLB,away,home,False,False,-1.0,0.4491,market_implied_v1,False,True,0,,-0.0249,0.627,0.627,0.5509,9.5,6,early_12h
+2026-06-22T07:01:46+08:00,69ef7f2129dac23a729038e1ae0119f7,MLB,away,home,False,False,-1.0,0.4515,market_implied_v1,False,False,0,,-0.0236,0.6363,0.6363,0.5485,9.0,16,pre_match_40m
