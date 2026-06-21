@@ -35,3 +35,20 @@ def test_all_na_skips_push(monkeypatch):
     m = awards_push.run_awards_push(lambda m: sent.append(m),
                                     now=datetime.datetime(2026, 6, 18), builder=builder)
     assert m is None and sent == []                  # 全 N/A → 不推
+
+
+def test_push_failure_not_marked_then_retries(monkeypatch):
+    """Never-Miss：awards 送出明確失敗(False) → 不 mark → 下一 tick 重送，成功才 mark。"""
+    store = _patch_flags(monkeypatch)
+    builder = lambda caps, getter=None: [
+        {"capability": "Champion", "title": "🏆 冠軍預測", "available": True,
+         "ranked": [{"outcome": "Brazil", "fair_probability": 0.3}]}]
+    now = datetime.datetime(2026, 6, 18)
+    sent = []
+    m1 = awards_push.run_awards_push(lambda m: (sent.append(m), False)[1], now=now, builder=builder)
+    assert m1 is None and len(sent) == 1
+    assert ("awards-20260618", "awards") not in store      # 未 mark → 可重送
+    ok_sent = []
+    m2 = awards_push.run_awards_push(lambda m: (ok_sent.append(m), True)[1], now=now, builder=builder)
+    assert m2 and len(ok_sent) == 1
+    assert ("awards-20260618", "awards") in store          # 成功才 mark
