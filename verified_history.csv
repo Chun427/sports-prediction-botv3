@@ -97,3 +97,11 @@ verified_at,game_id,sport,winner,pick_outcome,pick_hit,moneyline_hit,realized_re
 2026-06-21T15:03:13+08:00,dfc5202cf1b8ae002cf952cd04f235b9,FIFA,away,away,True,True,0.48,0.6503,market_implied_v1,True,False,0,False,-0.0376,0.6156,0.6156,0.6503,2.5,4,pre_match_40m
 2026-06-22T02:11:11+08:00,73529a242e319a86bf3d00ddb4accc37,FIFA,home,home,True,True,0.1100000000000001,0.8703,market_implied_v1,True,False,1,False,-0.034,0.8686,0.8686,0.8703,3.5,4,early_12h
 2026-06-22T04:02:21+08:00,52936746b7bd1b536bb6d7d2bb159424,MLB,home,away,False,False,-1.0,0.4375,market_implied_v1,False,True,0,,-0.0156,0.6311,0.6311,0.5625,8.0,3,early_12h
+2026-06-22T05:25:12+08:00,3385f13848d741d7dbed13f55c4e5406,MLB,away,home,False,False,-1.0,0.4499,market_implied_v1,False,False,0,,-0.0153,0.631,0.631,0.5501,9.0,13,early_12h
+2026-06-22T05:25:13+08:00,c489d951af8ab8f1fd4ae78c8d3ecfd0,MLB,away,home,False,False,-1.0,0.4738,market_implied_v1,False,True,0,,-0.0107,0.6315,0.6315,0.5262,8.5,5,early_12h
+2026-06-22T05:25:13+08:00,5b9a17363d625eecc39a522f99d7e6b5,MLB,home,home,True,True,0.8600000000000001,0.5212,market_implied_v1,False,False,0,,-0.0305,0.6379,0.6379,0.5212,8.0,9,early_12h
+2026-06-22T05:25:13+08:00,a14b7bea51fe65613c31f6f978b654bf,MLB,home,home,True,True,0.78,0.5523,market_implied_v1,False,True,1,,-0.0168,0.6421,0.6421,0.5523,8.0,7,early_12h
+2026-06-22T05:25:14+08:00,ec4cae25ad07349a66d527ea9274b717,MLB,home,home,True,True,0.76,0.5549,market_implied_v1,False,True,0,,-0.0233,0.6313,0.6313,0.5549,8.5,3,early_12h
+2026-06-22T05:25:14+08:00,6c9cb91ce383f581ac4ff00dd0d3248d,MLB,away,away,True,True,0.8400000000000001,0.5291,market_implied_v1,True,False,0,,-0.0264,0.63,0.63,0.5291,9.0,22,early_12h
+2026-06-22T05:25:15+08:00,af71fc71bb598645a13d40236b310307,MLB,home,home,True,True,0.6200000000000001,0.5969,market_implied_v1,False,True,1,,-0.0329,0.6387,0.6387,0.5969,8.0,7,pre_match_40m
+2026-06-22T05:25:16+08:00,5f92f257386ec5bf7c6e2498a21f3a61,FIFA,draw,home,False,False,-1.0,0.2055,market_implied_v1,False,True,0,False,-0.036,0.6757,0.6757,0.6695,2.5,0,early_12h
