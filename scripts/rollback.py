@@ -1,4 +1,4 @@
-"""rollback_v3.py — V3 安全快照 / 還原工具（狀態檔層級）。
+"""rollback.py — 安全快照 / 還原工具（狀態檔層級）。
 
 用途：在套用任何 enhancement 前先 snapshot；若出事可一鍵還原「狀態檔」。
 
@@ -9,9 +9,9 @@
 避免在非技術操作下誤刪 commit。
 
 用法：
-    python scripts/rollback_v3.py snapshot         # 建立 snapshot/v3_state_<UTC>.zip
-    python scripts/rollback_v3.py list             # 列出可用快照
-    python scripts/rollback_v3.py restore <zip>    # 從指定快照還原狀態檔（還原前會自動再備份一次）
+    python scripts/rollback.py snapshot         # 建立 snapshot/state_<UTC>.zip
+    python scripts/rollback.py list             # 列出可用快照
+    python scripts/rollback.py restore <zip>    # 從指定快照還原狀態檔（還原前會自動再備份一次）
 
 程式碼回滾（用 git，不用本工具）：
     git log --oneline                      # 找最後一個穩定 commit
@@ -45,7 +45,7 @@ def _present() -> list[str]:
 def snapshot() -> str:
     os.makedirs(_SNAP_DIR, exist_ok=True)
     ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    path = os.path.join(_SNAP_DIR, f"v3_state_{ts}.zip")
+    path = os.path.join(_SNAP_DIR, f"state_{ts}.zip")
     present = _present()
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
         for f in present:
@@ -59,7 +59,7 @@ def snapshot() -> str:
 
 
 def list_snapshots() -> list[str]:
-    snaps = sorted(glob.glob(os.path.join(_SNAP_DIR, "v3_state_*.zip")))
+    snaps = sorted(glob.glob(os.path.join(_SNAP_DIR, "state_*.zip")))
     if not snaps:
         print("[list] 尚無快照（先執行 snapshot）")
     for s in snaps:
