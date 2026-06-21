@@ -14,6 +14,7 @@ import capability_registry as registry
 import futures_devig
 import futures_fetcher
 import futures_render
+import obs
 from futures_validation import validate_outright_key
 
 # orchestrator 決定每個能力對應的 outright sport key（Rule 3：由 orchestrator 決定抓哪些）。
@@ -54,20 +55,36 @@ def build(capability: str, *, getter=None) -> dict:
     title = _TITLES.get(capability, capability)
     cap = registry.get(capability)
     if cap is None:
+        obs.warn("awards.build.na", capability=capability, layer="capability_registry",
+                 reason="unknown capability（registry 無此能力）")
         return _na(capability, title, "unknown capability")
     if cap.permanent_na:                                    # 市場根本不存在 → 不 fetch
+        obs.info("awards.build.na", capability=capability, layer="capability_registry",
+                 market_key=cap.outright_key, reason=f"permanent_na：{cap.permanent_na}")
         return _na(capability, title, cap.permanent_na)
     key = cap.outright_key                                  # key 來自 registry（單一真相）
     if not key:
+        obs.warn("awards.build.na", capability=capability, layer="capability_registry",
+                 reason="無對應 outright key（registry 未設定 market key）")
         return _na(capability, title, "無對應 outright key（待 API）")
 
     books = futures_fetcher.fetch(key, getter=getter)       # 只解析
+    _n_books = len(books or [])
     if not validate_outright_key(books):                    # ← runtime 驗證市場是否真的存在
+        # 區分：odds source 沒回東西 vs 回了但市場無效/解析不出
+        _layer = "odds_source（getter 未回傳任何盤口）" if _n_books == 0 else "parser/market（有回應但市場無效或解析失敗）"
+        obs.warn("awards.build.na", capability=capability, layer=_layer,
+                 market_key=key, n_books=_n_books, reason="市場不存在或無有效盤口")
         return _na(capability, title, "市場不存在或無有效盤口")
 
     dv = futures_devig.devig(_consensus_odds(books))        # 機率數學（唯一處）
     if not dv:
+        obs.warn("awards.build.na", capability=capability, layer="futures/devig",
+                 market_key=key, n_books=_n_books, reason="賠率無效（devig 失敗）")
         return _na(capability, title, "賠率無效")
+
+    obs.info("awards.build.ok", capability=capability, market_key=key, n_books=_n_books,
+             overround=dv["overround"])
 
     ranked = sorted(
         ({"outcome": k, "fair_probability": v} for k, v in dv["fair_probability"].items()),
