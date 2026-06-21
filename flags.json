@@ -542,7 +542,8 @@
   },
   "6344d2ce9df189689ed256d05cfcffb4": {
     "early": true,
-    "updated_at": "2026-06-20T19:35:08+08:00"
+    "updated_at": "2026-06-21T11:30:49+08:00",
+    "post": true
   },
   "681895f294b670b4c7b14495dfb583bc": {
     "early": true,
@@ -576,7 +577,8 @@
   },
   "dfc5202cf1b8ae002cf952cd04f235b9": {
     "early": true,
-    "updated_at": "2026-06-21T00:28:01+08:00"
+    "updated_at": "2026-06-21T11:30:48+08:00",
+    "pre": true
   },
   "awards-20260621": {
     "awards": true,
