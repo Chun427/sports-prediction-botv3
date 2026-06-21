@@ -14,12 +14,13 @@ def test_champion_candidate_with_known_key():
     assert reg.is_candidate("Champion") is True
 
 
-def test_goldenboot_goldenglove_have_candidate_keys_not_hardcoded_na():
-    # 不再寫死 False；有候選 key、非永久 N/A → 由 runtime 驗證決定
+def test_goldenboot_goldenglove_permanent_na_no_odds_api_outright_key():
+    # 官方證據（the-odds-api.com /sports 清單）：世足 outright 僅 soccer_fifa_world_cup_winner。
+    # 金靴／金手套／射手無對應 outright sport key → permanent_na、無候選 key、不空打 API。
     for n in ("GoldenBoot", "GoldenGlove", "TopGoalscorer"):
-        assert reg.outright_key(n)
-        assert reg.permanent_na_of(n) is None
-        assert reg.is_candidate(n) is True
+        assert reg.outright_key(n) is None
+        assert reg.permanent_na_of(n)            # 有 permanent_na 理由（非 None）
+        assert reg.is_candidate(n) is False
 
 
 def test_permanent_na_markets():
