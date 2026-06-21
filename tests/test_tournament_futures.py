@@ -68,10 +68,17 @@ def test_permanent_na_skips_fetch():
     assert data["available"] is False and "永久 N/A" in data["na_reason"]
 
 
-def test_goldenboot_available_when_market_exists():
-    # 關鍵：GoldenBoot 不再寫死 False；市場存在（getter 回盤）→ runtime 驗證 → available
-    data = tf.build("GoldenBoot", getter=_getter_ok)
+def test_champion_available_when_market_exists():
+    # Champion（官方有效 key soccer_fifa_world_cup_winner）：市場存在（getter 回盤）→ runtime 驗證 → available
+    data = tf.build("Champion", getter=_getter_ok)
     assert data["available"] is True
+
+
+def test_goldenboot_goldenglove_permanent_na_regardless_of_market():
+    # 官方無金靴/金手套 outright key → permanent_na 在 fetch 前就擋；即使 getter 回盤也永久 N/A
+    for n in ("GoldenBoot", "GoldenGlove"):
+        data = tf.build(n, getter=_getter_ok)
+        assert data["available"] is False
 
 
 def test_render_text_and_json_entrypoints():
