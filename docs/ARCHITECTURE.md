@@ -42,7 +42,7 @@ GitHub Actions (cron */5, concurrency-serialized)
 
 - **weekly_games.json**：滾動賽事池。每 6 小時（TW 0/6/12/18）刷新；含 id/sport/home/away/start_time/賠率。
 - **predictions.json**：賽前推播時寫入的預測快照（供賽後驗證對照）。
-- **verified_history.csv**：賽後真值（Truth Gate）。每場驗證後追加 ML/AH/OU/比分命中與 verified_at。每日戰報與長期統計唯一來源。
+- **verified_history.csv**：賽後真值（Truth Gate）。每場驗證後追加 ML/AH/OU 命中（**比分命中 scoreline_hit 僅 FIFA**；台彩 MLB/NBA 無正確比分玩法 → None）與 verified_at。每日戰報與長期統計唯一來源。
 - **flags.json / key_state.json**：冪等旗標與 API key 狀態。
 
 資料流：weekly_games -> predictions（賽前）-> verified_history（賽後），以 game_id 串接，commit-back 持久化。
