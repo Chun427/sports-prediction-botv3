@@ -63,6 +63,9 @@ def render_daily(now, today_rows: list[dict]) -> str:
         _line("讓分", *_rate(today_rows, "ah_hit")),
         _line("大小", *_rate(today_rows, "ou_hit")),
     ]
+    _sc_all = _rate(today_rows, "scoreline_hit")   # 比分僅 FIFA 有值（MLB/NBA=None 不計）
+    if _sc_all[1] > 0:                              # 當天有 FIFA 比分資料才顯示
+        out.append(_line("比分", *_sc_all))
     by_sport: dict[str, list] = {}
     for r in today_rows:
         by_sport.setdefault((r.get("sport") or "").upper(), []).append(r)
