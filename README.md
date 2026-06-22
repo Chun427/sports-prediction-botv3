@@ -9,6 +9,8 @@
 > 狀態：**v0 stable baseline（Production / Observation Mode）**。核心 / 三推播 / 每日戰報 / 賽後驗證 / 漏推對帳 流程皆完成且運行。測試 **248 passed**。工程與維運細節見 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)。
 > 支援：⚾ MLB · 🏀 NBA · ⚽ FIFA。
 
+> ⚙️ **部署可靠性建議（觸發層）**：GitHub Actions 的 `schedule` 為 best-effort，排程可能延遲或被丟棄。本專案以「每次 run 內部 ~50 分鐘 tick 迴圈」緩解;若要更高的送達保證,**建議再加一個外部排程器**每 5 分鐘觸發 `workflow_dispatch`。Recommended: add an external scheduler (cron-job.org or Cloudflare Worker) to trigger `workflow_dispatch` every 5 minutes for high-reliability delivery. 推播本身已是 idempotent + success-gated（重送不重複、送失敗才重試）,缺的只有觸發層冗餘。
+
 -----
 
 ## 🎯 系統定位
