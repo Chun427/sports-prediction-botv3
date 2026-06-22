@@ -1,5 +1,8 @@
 {
   "ODDS_API_KEY_1": {
     "cooldown_until": "2026-06-22T18:55:57+08:00"
+  },
+  "ODDS_API_KEY_2": {
+    "cooldown_until": "2026-06-22T19:21:59+08:00"
   }
 }
