@@ -215,16 +215,16 @@ def test_refresh_hour_fetches_when_due(tmp_path, monkeypatch):
 
 
 # ── 7. 決策2：兩把 KEY 都不可用 → 傳遞例外、不沿用舊快取 ──
-def test_refresh_failure_propagates_not_keeps_cache(tmp_path, monkeypatch):
+def test_refresh_failure_uses_cache_when_available(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     # 昨日的舊快取
     dm.save_pool([_game("old", BASE + timedelta(hours=2))],
                  updated_at="2026-06-08T12:00:00+08:00")
     fetcher = FakeFetcher(boom=True)  # 兩把 KEY 都 429 → AllKeysUnavailable
-    # 決策2：ensure_pool 不吞例外，直接向上傳遞
-    with pytest.raises(AllKeysUnavailable):
-        sp.ensure_pool(BASE, fetcher)  # 12:00 刷新時刻
+    # 決策2（修正）：刷新失敗但有快取 → 退回沿用快取（不拋例外、不漏推已快取賽事）
+    games = sp.ensure_pool(BASE, fetcher)  # 12:00 刷新時刻
     assert fetcher.calls == 1
+    assert [g["id"] for g in games] == ["old"]
     # 舊快取「未被覆蓋」（刷新失敗不落盤）
     assert [g["id"] for g in dm.load_pool()["games"]] == ["old"]
 
