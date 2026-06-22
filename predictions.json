@@ -223,5 +223,121 @@
       "phase": "early_12h"
     },
     "pre_pushed_at": "2026-06-22T13:31:27+08:00"
+  },
+  "7ad7a0ce2ef2618bb59b066da5642f70": {
+    "prediction": {
+      "game_id": "7ad7a0ce2ef2618bb59b066da5642f70",
+      "sport": "FIFA",
+      "home": "France",
+      "away": "Iraq",
+      "start_time": "2026-06-23T05:00:00+08:00",
+      "market": {
+        "asian_handicap": -2.5,
+        "over_under": 3.5,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-22T09:55:58.440139+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "home": 0.8912,
+        "away": 0.0299,
+        "draw": 0.0789
+      },
+      "best_odds": {
+        "home": 1.09,
+        "away": 36.0,
+        "draw": 13.0
+      },
+      "edge": {
+        "home": -0.0286,
+        "away": 0.076,
+        "draw": 0.0254
+      },
+      "best_pick": {
+        "outcome": "away",
+        "edge": 0.076,
+        "odds": 36.0
+      },
+      "avg_overround": 0.0455,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-22T17:55:57+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 3.0,
+        "lambda_away": 0.5,
+        "expected_total": 3.5,
+        "supremacy": 2.5,
+        "outcome_probs": {
+          "home": 0.8677,
+          "draw": 0.0956,
+          "away": 0.0367
+        },
+        "top_scorelines": [
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.1359
+          },
+          {
+            "home": 3,
+            "away": 0,
+            "prob": 0.1359
+          },
+          {
+            "home": 4,
+            "away": 0,
+            "prob": 0.1019
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.0906
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0679
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.8703,
+          "draw": 0.0941,
+          "away": 0.0355
+        },
+        "top_scorelines": [
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.14
+          },
+          {
+            "home": 3,
+            "away": 0,
+            "prob": 0.1351
+          },
+          {
+            "home": 4,
+            "away": 0,
+            "prob": 0.0999
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.0898
+          },
+          {
+            "home": 3,
+            "away": 1,
+            "prob": 0.0691
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-22T17:55:58+08:00"
   }
 }
