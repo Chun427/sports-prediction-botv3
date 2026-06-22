@@ -162,6 +162,16 @@ def save_prediction(game_id: str, prediction: dict) -> None:
     obs.info("state.snapshot_saved", game_id=game_id)
 
 
+def bump_post_attempts(game_id: str) -> None:
+    """賽後輪詢指數退避：累計該場 scores 輪詢次數。snapshot 不存在則無動作；不覆蓋其他欄位。"""
+    preds = load_predictions()
+    snap = preds.get(str(game_id))
+    if snap is None:
+        return
+    snap["post_attempts"] = int(snap.get("post_attempts", 0)) + 1
+    _write_json(PREDICTIONS_FILE, preds)
+
+
 def remove_prediction(game_id: str) -> None:
     """賽後驗證完成後移出 pending（停止再抓 scores）。不存在則無動作。"""
     preds = load_predictions()
