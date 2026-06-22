@@ -313,6 +313,17 @@ def run_early_push(
 # 保守取偏短值，避免延誤抓到提早結束的賽果；達此時間後才每 tick 輪詢直到完賽。
 _POSTGAME_MIN_DURATION_MIN = {"MLB": 150, "NBA": 130, "FIFA": 100}
 
+# 賽後輪詢「指數退避」：自 start+min_dur 起，第 n 次輪詢的「額外累積延遲」（分鐘）。
+# 例：FIFA 第0次=start+100，第1次=+30→130，第2次=+60→190，第3次=+120→310；
+# 超過表尾後每次再 +120。避免卡住的 pending 場每 tick 狂抓 scores、燒 API 配額。
+_POSTGAME_BACKOFF_CUM_MIN = [0, 30, 90, 210]
+
+
+def _postgame_backoff_extra_min(attempts: int) -> int:
+    if attempts < len(_POSTGAME_BACKOFF_CUM_MIN):
+        return _POSTGAME_BACKOFF_CUM_MIN[attempts]
+    return _POSTGAME_BACKOFF_CUM_MIN[-1] + 120 * (attempts - len(_POSTGAME_BACKOFF_CUM_MIN) + 1)
+
 
 def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
                         post_pusher: PostPusher, verifier=None) -> list[str]:
@@ -338,10 +349,13 @@ def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
         if start is not None and start > now:
             continue  # 尚未開賽 → 不抓
         sport = pred.get("sport")
-        # 配額節流：未到「預估最早完賽時間」前不抓賽果（賽中 completed 不可能為真 → 每 tick 輪詢純浪費 Odds API 配額）。
+        # 配額節流 + 指數退避：未到「預估完賽 + 退避延遲」前不抓賽果（賽中/兩次輪詢間 → 不打 API）。
         _min_dur = _POSTGAME_MIN_DURATION_MIN.get(str(sport).upper(), 120)
-        if start is not None and now < start + timedelta(minutes=_min_dur):
-            obs.info("postgame.too_early_skip_fetch", game_id=gid, sport=sport)
+        _attempts = int(snap.get("post_attempts", 0))
+        _earliest_min = _min_dur + _postgame_backoff_extra_min(_attempts)
+        if start is not None and now < start + timedelta(minutes=_earliest_min):
+            obs.info("postgame.backoff_skip_fetch", game_id=gid, sport=sport,
+                     attempts=_attempts, earliest_min=_earliest_min)
             continue
         if start is not None and start < stale_cutoff and not dm.is_pushed(gid, "post"):
             dm.remove_prediction(gid)  # TD11 過期驅逐
@@ -362,9 +376,11 @@ def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
             r = scores.get(gid)
             if r is None:
                 obs.info("postgame.no_result", game_id=gid, sport=sport)  # API 未返回此場賽果 → 等
+                dm.bump_post_attempts(gid)  # 退避：拉長下次輪詢間隔
                 continue
             if not r.get("completed"):
                 obs.info("postgame.not_completed", game_id=gid, sport=sport)  # 尚未完賽 → 等下個 tick
+                dm.bump_post_attempts(gid)  # 退避：拉長下次輪詢間隔
                 continue
             if dm.is_pushed(gid, "post"):
                 dm.remove_prediction(gid)  # idempotent 清理
