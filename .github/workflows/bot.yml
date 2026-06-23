@@ -14,9 +14,9 @@ concurrency:
 
 jobs:
   run:
-    name: runtime watchdog (push loop)
+    name: tick (push)
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,11 +33,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Runtime watchdog loop
+      - name: Tick + commit state
         env:
           DRY_RUN: "false"
           ODDS_API_KEY_1: ${{ secrets.ODDS_API_KEY_1 }}
           ODDS_API_KEY_2: ${{ secrets.ODDS_API_KEY_2 }}
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_CHAT: ${{ secrets.TG_CHAT }}
-        run: bash scripts/runtime.sh
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          python src/sports_prediction.py push || true
+          for f in flags.json weekly_games.json predictions.json key_state.json verified_history.csv; do
+            [ -f "$f" ] && git add -- "$f" || true
+          done
+          if ! git diff --staged --quiet; then
+            git commit -q -m "[skip ci] update bot state" || true
+            git pull --rebase --autostash -q || true
+            git push -q || true
+          fi
