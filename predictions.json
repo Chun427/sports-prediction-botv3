@@ -107,7 +107,7 @@
       "phase": "early_12h"
     },
     "pre_pushed_at": "2026-06-21T15:03:11+08:00",
-    "post_attempts": 9
+    "post_attempts": 10
   },
   "da1236e8e0bc448283c6e1e28d578e43": {
     "prediction": {
@@ -217,7 +217,7 @@
       "phase": "pre_match_40m"
     },
     "pre_pushed_at": "2026-06-23T07:05:01+08:00",
-    "post_attempts": 2
+    "post_attempts": 3
   },
   "8ba93d190f1f934e33862a97a6353a6e": {
     "prediction": {
