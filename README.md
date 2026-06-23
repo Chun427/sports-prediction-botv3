@@ -6,10 +6,10 @@
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?logo=telegram&logoColor=white)
 
-> 狀態：**v0 stable baseline（Production / Observation Mode）**。核心 / 三推播 / 每日戰報 / 賽後驗證 / 漏推對帳 流程皆完成且運行。測試 **248 passed**。工程與維運細節見 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)。
+> 狀態：**v0 stable baseline（Production / Observation Mode）**。核心 / 三推播 / 每日戰報 / 賽後驗證 / 漏推對帳 流程皆完成且運行。測試 **251 passed**。最新 **v8.6**：賽前/早盤推播全快取化（推播時點不呼叫 Odds API）、Pool 刷新失敗安全退回快取、賽後驗證指數退避。工程與維運細節見 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)、[`docs/release_notes.md`](docs/release_notes.md)。
 > 支援：⚾ MLB · 🏀 NBA · ⚽ FIFA。
 
-> ⚙️ **部署可靠性建議（觸發層）**：GitHub Actions 的 `schedule` 為 best-effort，排程可能延遲或被丟棄。本專案以「每次 run 內部 ~50 分鐘 tick 迴圈」緩解;若要更高的送達保證,**建議再加一個外部排程器**每 5 分鐘觸發 `workflow_dispatch`。Recommended: add an external scheduler (cron-job.org or Cloudflare Worker) to trigger `workflow_dispatch` every 5 minutes for high-reliability delivery. 推播本身已是 idempotent + success-gated（重送不重複、送失敗才重試）,缺的只有觸發層冗餘。
+> ⚙️ **部署可靠性建議（觸發層）**：GitHub Actions 的 `schedule` 為 best-effort，排程可能延遲或被丟棄。本專案 `bot.yml` 為 single-tick（每 5 分鐘一次乾淨執行）；v8.6 起賽前/早盤推播改為**全快取驅動 + 刷新失敗退回快取**，即使某次漏跑或金鑰暫時耗盡，下一個 tick 仍能用快取補推。若要更高送達保證，**可再加一個外部排程器**每 5 分鐘觸發 `workflow_dispatch`。Recommended: optionally add an external scheduler (cron-job.org or Cloudflare Worker) to trigger `workflow_dispatch` every 5 minutes. 推播本身為 idempotent + success-gated（重送不重複、送失敗才重試）。
 
 -----
 
@@ -240,6 +240,8 @@ commit-back 狀態檔（[skip ci] update bot state）
 
 賽前兩推成功皆 `save_prediction` 落盤 → 賽後驗證不依賴 40m 窄窗命中。
 
+> 🧊 **v8.6 快取驅動**：Early（12h）與 Pregame（40m）推播只讀 `weekly_games.json` 快取池做確定性計算，**推播時點不呼叫 Odds API**；Pool 僅在 TW 00/06/12/18 刷新，刷新失敗且有快取時退回沿用（不漏推已快取賽事）。
+
 > ⚙️ 註：上述時間窗、刷新時點、過期門檻等**運行參數**皆定義於 `src/constants.py`（如 `EARLY_WINDOW_MIN` / `PREGAME_WINDOW_MIN` / `POSTGAME_WINDOW_MIN` / `REFRESH_HOURS_TW`），文件數值為當前預設、可依部署調整。**All values are runtime-config driven and may vary per deployment.**（測試數等 repo 事實不在此列。）
 
 -----
@@ -281,6 +283,7 @@ commit-back 狀態檔（[skip ci] update bot state）
 2. **冪等**：`is_pushed(gid, phase)` 防重複（重複 tick ≠ 重複推播）。
 3. **scheduler 失敗自癒**：某次沒跑，下次 tick 補齊。
 4. **賽後保底**：early 成功即落盤 → 不依賴 40m 窄窗。
+5. **金鑰耗盡自癒（v8.6）**：Pool 刷新遇金鑰全不可用（429/配額）時，有快取則退回快取續推 → 早盤/賽前推播不因暫時金鑰耗盡而漏。
 
 > 可靠性瓶頸不在邏輯（已是冪等狀態機），而在「tick 是否被準時執行」→ 由 scheduler 解決。
 
@@ -288,10 +291,11 @@ commit-back 狀態檔（[skip ci] update bot state）
 
 ## ⚙️ GitHub Actions / Scheduler
 
-- `bot.yml`：`schedule: */5` + `workflow_dispatch`；跑 `python src/sports_prediction.py push`，結束 commit-back 狀態檔。
-- **外部 scheduler（核心）**：cron-job.org / Cloudflare 每 5 分鐘 POST
+- `bot.yml`：`schedule: */5` + `workflow_dispatch`（single-tick，每次約 1 分鐘乾淨結束）；跑 `python src/sports_prediction.py push`，結束 commit-back 狀態檔。
+- **Odds API 用量（v8.6 優化）**：僅三入口——① Pool 刷新（`ensure_pool`，TW 00/06/12/18，4 次/日）② 賽果（`run_postgame_verify`，**指數退避** 100→130→190→310→…分，不再每 tick 抓）③ 冠軍 outright（awards，每日 1 次冪等）。**早盤/賽前推播全快取、推播時點 0 Odds API 呼叫。**
+- **外部 scheduler（可選）**：cron-job.org / Cloudflare 每 5 分鐘 POST
   `.../actions/workflows/bot.yml/dispatches`（用檔名 `bot.yml`，body `{"ref":"main"}`，PAT 只給該 repo Actions:write）。
-- 公開 repo Actions 分鐘免費；賽程池快取不增賠率 API 用量；但有 pending 場時每 tick 會打**賽果 API** → `*/5` 為延遲與額度平衡點。
+- 公開 repo Actions 分鐘免費。
 
 -----
 
@@ -307,7 +311,7 @@ commit-back 狀態檔（[skip ci] update bot state）
 
 ## 🧪 測試 & 部署
 
-- `pytest -q` → **248 passed**；CI 必須全綠才可 merge。
+- `pytest -q` → **251 passed**；CI 必須全綠才可 merge。
 - **Secrets**：`ODDS_API_KEY_1`(必)、`ODDS_API_KEY_2`、`TG_TOKEN`(必)、`TG_CHAT`(必)、`TG_ADMIN_CHAT`(選；設了才啟用漏推告警，未設則 no-op)；`bot.yml` 須 `DRY_RUN: "false"`（未設預設 true＝只 log）。
 - **Deployment status**：All overlay modules have been merged into the production branch. Refer to Git history for implementation details.
 
