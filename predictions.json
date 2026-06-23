@@ -107,7 +107,7 @@
       "phase": "pre_match_40m"
     },
     "pre_pushed_at": "2026-06-23T07:05:01+08:00",
-    "post_attempts": 8
+    "post_attempts": 9
   },
   "8ba93d190f1f934e33862a97a6353a6e": {
     "prediction": {
@@ -118,112 +118,112 @@
       "start_time": "2026-06-24T01:00:00+08:00",
       "market": {
         "asian_handicap": -2.0,
-        "over_under": 3.0,
+        "over_under": 3.5,
         "odds_source": "the-odds-api/consensus",
-        "timestamp": "2026-06-23T05:15:20.112386+00:00"
+        "timestamp": "2026-06-23T16:31:25.149687+00:00"
       },
       "bookmaker_count": 9,
       "fair_prob": {
-        "away": 0.0532,
-        "home": 0.8257,
-        "draw": 0.1211
+        "draw": 0.1133,
+        "home": 0.8377,
+        "away": 0.049
       },
       "best_odds": {
-        "home": 1.19,
-        "away": 20.0,
-        "draw": 8.25
+        "home": 1.15,
+        "away": 23.0,
+        "draw": 9.0
       },
       "edge": {
-        "away": 0.0642,
-        "home": -0.0174,
-        "draw": -0.0011
+        "draw": 0.0194,
+        "home": -0.0366,
+        "away": 0.1276
       },
       "best_pick": {
         "outcome": "away",
-        "edge": 0.0642,
-        "odds": 20.0
+        "edge": 0.1276,
+        "odds": 23.0
       },
       "avg_overround": 0.0463,
       "model": "market_implied_v1",
-      "generated_at": "2026-06-23T13:15:18+08:00",
+      "generated_at": "2026-06-24T00:31:24+08:00",
       "model_score": {
         "type": "poisson",
         "sport": "FIFA",
-        "lambda_home": 2.5,
-        "lambda_away": 0.5,
-        "expected_total": 3.0,
+        "lambda_home": 2.75,
+        "lambda_away": 0.75,
+        "expected_total": 3.5,
         "supremacy": 2.0,
         "outcome_probs": {
-          "home": 0.8107,
-          "draw": 0.1344,
-          "away": 0.0549
+          "home": 0.7912,
+          "draw": 0.133,
+          "away": 0.0758
         },
         "top_scorelines": [
           {
             "home": 2,
             "away": 0,
-            "prob": 0.1556
+            "prob": 0.1142
           },
           {
             "home": 3,
             "away": 0,
-            "prob": 0.1297
-          },
-          {
-            "home": 1,
-            "away": 0,
-            "prob": 0.1245
-          },
-          {
-            "home": 4,
-            "away": 0,
-            "prob": 0.081
+            "prob": 0.1047
           },
           {
             "home": 2,
             "away": 1,
-            "prob": 0.0778
+            "prob": 0.0856
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.083
+          },
+          {
+            "home": 3,
+            "away": 1,
+            "prob": 0.0785
           }
         ]
       },
       "model_mc": {
         "n": 20000,
         "win_prob": {
-          "home": 0.8152,
-          "draw": 0.1306,
-          "away": 0.0542
+          "home": 0.7931,
+          "draw": 0.1315,
+          "away": 0.0755
         },
         "top_scorelines": [
           {
             "home": 2,
             "away": 0,
-            "prob": 0.1577
+            "prob": 0.1119
           },
           {
             "home": 3,
             "away": 0,
-            "prob": 0.1338
-          },
-          {
-            "home": 1,
-            "away": 0,
-            "prob": 0.1247
-          },
-          {
-            "home": 4,
-            "away": 0,
-            "prob": 0.0803
+            "prob": 0.1036
           },
           {
             "home": 2,
             "away": 1,
-            "prob": 0.0744
+            "prob": 0.0851
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.083
+          },
+          {
+            "home": 3,
+            "away": 1,
+            "prob": 0.0776
           }
         ]
       },
-      "phase": "early_12h"
+      "phase": "pre_match_40m"
     },
-    "pre_pushed_at": "2026-06-23T13:15:20+08:00"
+    "pre_pushed_at": "2026-06-24T00:31:25+08:00"
   },
   "2f49dd8deae3079dc4eb2d634d18a99c": {
     "prediction": {
