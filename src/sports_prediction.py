@@ -499,10 +499,14 @@ def main(argv: list[str] | None = None) -> int:
 
     # ── 冠軍 + 個人獎項 futures 推播（addon layer，guarded，每日 1 次）──
     # 獨立於 match push / tick 核心：build_awards 走 registry→fetch→validate（market 唯一真相）。
+    # 2026-06：世足獎項暫停（冠軍 outright 長期 N/A、個人獎項市場不存在）。
+    # 設 AWARDS_ENABLED=True 即恢復；程式與測試皆保留，零刪除。
+    AWARDS_ENABLED = False
     try:
-        import awards_push
-        aw_pusher = notifier.make_postgame_pusher(dry_run, **tg)
-        awards_push.run_awards_push(aw_pusher, now=now)
+        if AWARDS_ENABLED:
+            import awards_push
+            aw_pusher = notifier.make_postgame_pusher(dry_run, **tg)
+            awards_push.run_awards_push(aw_pusher, now=now)
     except Exception as exc:  # noqa: BLE001 — addon 不得影響核心
         obs.error("awards.error", err=str(exc))
 
