@@ -159,3 +159,12 @@ verified_at,game_id,sport,winner,pick_outcome,pick_hit,moneyline_hit,realized_re
 2026-06-25T09:36:56+08:00,6bd1412ad6a83bd72dfccfd3b52aba6b,MLB,home,away,False,False,-1.0,0.5111,market_implied_v1,False,False,0,,-0.0172,0.6385,0.6385,0.4889,8.0,12,pre_match_40m
 2026-06-25T09:36:57+08:00,885ba95805db310a7bcc3fb1a7a6dd28,FIFA,away,away,True,True,0.3400000000000001,0.7231,market_implied_v1,True,False,1,True,-0.0311,0.733,0.733,0.7231,2.5,3,early_12h
 2026-06-25T09:36:57+08:00,d1279ce7f33136a33e99ad442fc855e8,FIFA,home,home,True,True,0.19999999999999996,0.8086,market_implied_v1,,False,0,False,-0.0297,0.8127,0.8127,0.8086,3.0,6,early_12h
+2026-06-25T11:35:01+08:00,af718a14d01fafa34e924ea752814134,MLB,away,away,True,True,0.8300000000000001,0.5324,market_implied_v1,False,True,1,,-0.0256,0.6244,0.6244,0.5324,9.5,9,pre_match_40m
+2026-06-25T11:35:01+08:00,e5eb0d0e2884807a04a7a39cb730639d,MLB,away,home,False,False,-1.0,0.4115,market_implied_v1,False,True,0,,-0.0231,0.6309,0.6309,0.5885,8.5,4,early_12h
+2026-06-25T11:35:02+08:00,2dcef2b58c37ee8ffd48e1d662c5ebda,MLB,away,away,True,True,0.71,0.569,market_implied_v1,False,False,0,,-0.027,0.635,0.635,0.569,9.0,11,early_12h
+2026-06-25T11:35:02+08:00,f7efadc6e4a428969fb12a38b1f5c343,MLB,away,away,True,True,0.6499999999999999,0.5912,market_implied_v1,False,True,1,,-0.0245,0.6298,0.6298,0.5912,8.0,7,pre_match_40m
+2026-06-25T11:35:03+08:00,3f6bd3e4a5b58ebe56c5f3bd89470591,MLB,away,away,True,True,1.0299999999999998,0.4841,market_implied_v1,True,False,0,,-0.0172,0.6319,0.6319,0.4841,9.0,13,pre_match_40m
+2026-06-25T11:35:03+08:00,0c4f44574b86346807453d2bfde5280e,MLB,home,away,False,False,-1.0,0.4586,market_implied_v1,False,True,0,,-0.02,0.6424,0.6424,0.5414,7.5,7,early_12h
+2026-06-25T11:35:04+08:00,0af952c1f3ce17d011acf2b042d9a497,MLB,away,away,True,True,1.0,0.4971,market_implied_v1,True,False,0,,-0.0059,0.6289,0.6289,0.4971,8.5,15,early_12h
+2026-06-25T11:35:05+08:00,5993bd5196ca09f83990f0c3261e442e,FIFA,away,away,True,True,0.95,0.4949,market_implied_v1,True,False,0,True,-0.035,0.4908,0.4908,0.4949,2.5,3,early_12h
+2026-06-25T11:35:05+08:00,c0355dfc6e26ec327e379b6ef5824a5f,FIFA,home,away,False,False,-1.0,0.173,market_implied_v1,False,True,0,False,-0.0212,0.4874,0.4874,0.5792,2.5,1,early_12h
