@@ -24,7 +24,8 @@ _STAGE = "daily"
 _DIV = "━━━━━━━━"
 _WAIT_MIN = 30        # 最近一次驗證後需靜置（分）
 _STALE_HOURS = 12     # 開賽逾此時數仍未驗證 → 視為過期，不再等待
-_DEADLINE_TW = (23, 35)  # 雙保險：每日 TW 此時刻後，若今日有已驗證場且尚未送 → 強制送（只送真資料）
+_DEADLINE_TW = (23, 35)  # （保留：舊常數，已不作為主要保險）
+_SAFETY_TW = (23, 30)    # 同日最後保險：TW 此刻後仍未送 → 強制送已驗證真實場（搭配跨午夜補送）
 _SPORT_ORDER = ["FIFA", "MLB", "NBA"]
 _SPORT_LABEL = {"FIFA": "⚽ 足球", "MLB": "⚾ 棒球", "NBA": "🏀 籃球"}
 _FOOTER = "📡 數據來源：系統統計"
@@ -89,72 +90,89 @@ def render_daily(now, today_rows: list[dict]) -> str:
     return "\n".join(out)
 
 
-def run_daily_report(pusher, *, now=None, games=None, verified=None) -> str | None:
-    """觸發判定 + 推播。回傳已送字串；條件未滿足／當日已推 → None。"""
-    now = now or _dt.datetime.now(TW_TZ)
-    today = now.astimezone(TW_TZ).date()
-    gid = f"daily-{today:%Y%m%d}"
+def _try_send_day(day, now, games, verified, pusher, *, allow_force):
+    """嘗試送某一天的戰報（單一真實來源邏輯）。回傳 msg 或 None。
+
+    all_settled（當日每場皆已驗證或逾 12h 過期）→ 主路徑（+30 分靜置）送。
+    未 all_settled 時：allow_force=True → 用「目前已驗證的真實場」強制送；否則等。
+    只送 verified_history 真實場，無資料不送（不捏造）。冪等：當日已送 → 不重送。
+    """
+    gid = f"daily-{day:%Y%m%d}"
     if dm.is_pushed(gid, _STAGE):
         return None
+    day_games = [g for g in games
+                 if (_parse(g.get("start_time")) and
+                     _parse(g.get("start_time")).astimezone(TW_TZ).date() == day)]
+    if not day_games:
+        return None
+    day_ids = {g.get("id") for g in day_games}
+    verified_ids = {r.get("game_id") for r in verified}
+    day_rows = [r for r in verified if r.get("game_id") in day_ids]
 
+    # all_settled = 每場皆「已驗證」或「開賽逾 12h（過期）」
+    all_settled = True
+    for g in day_games:
+        st = _parse(g.get("start_time"))
+        if not st:
+            continue
+        stale = (now - st) > _dt.timedelta(hours=_STALE_HOURS)
+        if g.get("id") not in verified_ids and not stale:
+            all_settled = False
+            break
+
+    if all_settled:
+        # ── 主路徑：最後一場完成 → 靜置 30 分 → 送 ──
+        if not day_rows:
+            return None
+        last = None
+        for r in day_rows:
+            d = _parse(r.get("verified_at"))
+            if d and (last is None or d > last):
+                last = d
+        if last is not None and (now - last) < _dt.timedelta(minutes=_WAIT_MIN):
+            obs.info("daily.skip_wait30", date=gid, last_verified=last.isoformat())
+            return None
+    else:
+        # ── 尚未全部完成 ──
+        if not allow_force:
+            obs.info("daily.skip_pending", date=gid)
+            return None
+        if not day_rows:
+            obs.info("daily.force_no_data", date=gid)
+            return None
+        obs.info("daily.force_send", date=gid, verified_games=len(day_rows))
+
+    msg = render_daily(now, day_rows)
+    if pusher(msg) is False:  # 送出失敗 → 不 mark → 下一 tick 重送（Never-Miss）
+        obs.warn("daily.push_failed", date=gid)
+        return None
+    dm.mark_pushed(gid, _STAGE)
+    obs.info("daily.sent", date=gid, games=len(day_rows))
+    return msg
+
+
+def run_daily_report(pusher, *, now=None, games=None, verified=None) -> str | None:
+    """每日戰報觸發。Never-Miss 三層：
+
+    1. 主路徑：當日最後一場完成 + 靜置 30 分 → 送（最適時間，不靠固定時刻）。
+    2. 同日保險：TW 23:30 後仍未送 → 強制送當日已驗證真實場（極端情況最後一道）。
+    3. 跨午夜補送：隔日 tick 發現昨日未送且有已驗證場 → 補送昨日完整結果（真正 never-miss，
+       不依賴狹窄時間窗，免疫 GitHub Actions tick 抖動）。
+    """
+    now = now or _dt.datetime.now(TW_TZ)
     if games is None:
         games = dm._read_json("weekly_games.json", {"games": []}).get("games", [])
     if verified is None:
         verified = dm.read_verified()
 
-    today_games = [g for g in games
-                   if (_parse(g.get("start_time")) and
-                       _parse(g.get("start_time")).astimezone(TW_TZ).date() == today)]
-    if not today_games:
-        return None
-
-    today_ids = {g.get("id") for g in today_games}
-    verified_ids = {r.get("game_id") for r in verified}
-    today_rows = [r for r in verified if r.get("game_id") in today_ids]
-
-    # 雙保險：是否已到 TW 強制送截止時間
     tw_now = now.astimezone(TW_TZ)
-    past_deadline = (tw_now.hour, tw_now.minute) >= _DEADLINE_TW
+    today = tw_now.date()
+    yesterday = today - _dt.timedelta(days=1)
+    past_safety = (tw_now.hour, tw_now.minute) >= _SAFETY_TW
 
-    if not past_deadline:
-        # ── 第一層（正常路徑）：今日全部 settled + 靜置 30 分才送 ──
-        # 仍有「已開賽、未驗證、非過期」的場次 → 還沒打完，等
-        for g in today_games:
-            st = _parse(g.get("start_time"))
-            if not st:
-                continue
-            verified_done = g.get("id") in verified_ids
-            stale = (now - st) > _dt.timedelta(hours=_STALE_HOURS)  # 開賽逾 12h → 過期，不再等
-            if not verified_done and not stale:
-                obs.info("daily.skip_pending", game_id=g.get("id"), sport=g.get("sport"),
-                         started=st <= now)
-                return None
-
-        if not today_rows:
-            return None
-
-        # 距最近一次驗證需 ≥ 30 分
-        last = None
-        for r in today_rows:
-            d = _parse(r.get("verified_at"))
-            if d and (last is None or d > last):
-                last = d
-        if last is not None and (now - last) < _dt.timedelta(minutes=_WAIT_MIN):
-            obs.info("daily.skip_wait30", last_verified=last.isoformat())
-            return None
-    else:
-        # ── 第二層（截止強制送）：跳過 settled / 30 分 gate，只送「目前已驗證」的真實場 ──
-        # 今天連一場都還沒驗證 → 無真資料可送（不送空戰報、不捏造）
-        if not today_rows:
-            obs.info("daily.deadline_no_data", date=gid)
-            return None
-        obs.info("daily.deadline_force", date=gid, verified_games=len(today_rows))
-
-    msg = render_daily(now, today_rows)
-    ok = pusher(msg)
-    if ok is False:  # 明確送出失敗 → 不 mark → 下一 tick 會重送（Never-Miss Recovery）
-        obs.warn("daily.push_failed", date=gid)
-        return None
-    dm.mark_pushed(gid, _STAGE)  # send 成功才 mark
-    obs.info("daily.sent", date=gid, games=len(today_rows))
-    return msg
+    # 今日：主路徑（all_settled+30分），或 23:30 後同日保險強制送
+    sent = _try_send_day(today, now, games, verified, pusher, allow_force=past_safety)
+    if sent:
+        return sent
+    # 跨午夜補送：昨日若還沒送（同日窗口被 tick 抖動錯過）→ 用昨日完整已驗證結果補送
+    return _try_send_day(yesterday, now, games, verified, pusher, allow_force=True)
