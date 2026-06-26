@@ -23,6 +23,7 @@ from typing import Callable, Iterable
 import data_manager as dm
 import monte_carlo_engine
 import notifier
+import postgame_formatter
 import obs
 import result_verifier
 import verified_enrich
@@ -390,7 +391,8 @@ def run_postgame_verify(now: datetime, scores_fetcher: ScoresFetcher,
                 obs.warn("postgame.verify_none", game_id=gid, sport=sport)  # 完賽但缺分數 → 無法驗證
                 continue
             try:
-                ok = post_pusher(notifier.render_postgame_eval(v, pred, r))
+                ok = post_pusher(postgame_formatter.enhance(
+                    notifier.render_postgame_eval(v, pred, r), pred, r))
             except Exception as exc:  # noqa: BLE001 — 推播失敗不可崩
                 obs.error("postgame.push_failed", game_id=gid, err=str(exc))
                 continue
