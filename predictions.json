@@ -107,6 +107,234 @@
       "phase": "pre_match_40m"
     },
     "pre_pushed_at": "2026-06-26T07:38:09+08:00",
-    "post_attempts": 1
+    "post_attempts": 2
+  },
+  "b86b4d60f773e9e3c46c00e9a6496e79": {
+    "prediction": {
+      "game_id": "b86b4d60f773e9e3c46c00e9a6496e79",
+      "sport": "FIFA",
+      "home": "Norway",
+      "away": "France",
+      "start_time": "2026-06-27T03:00:00+08:00",
+      "market": {
+        "asian_handicap": 1.0,
+        "over_under": 3.0,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-26T08:56:42.709733+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "draw": 0.2052,
+        "home": 0.1945,
+        "away": 0.6003
+      },
+      "best_odds": {
+        "home": 5.1,
+        "away": 1.62,
+        "draw": 4.82
+      },
+      "edge": {
+        "draw": -0.0111,
+        "home": -0.0079,
+        "away": -0.0275
+      },
+      "best_pick": null,
+      "avg_overround": 0.048,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-26T16:56:41+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 1.0,
+        "lambda_away": 2.0,
+        "expected_total": 3.0,
+        "supremacy": -1.0,
+        "outcome_probs": {
+          "home": 0.1826,
+          "draw": 0.2117,
+          "away": 0.6057
+        },
+        "top_scorelines": [
+          {
+            "home": 0,
+            "away": 1,
+            "prob": 0.0996
+          },
+          {
+            "home": 0,
+            "away": 2,
+            "prob": 0.0996
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.0996
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "prob": 0.0996
+          },
+          {
+            "home": 0,
+            "away": 3,
+            "prob": 0.0664
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.1822,
+          "draw": 0.2105,
+          "away": 0.6072
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1019
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "prob": 0.1008
+          },
+          {
+            "home": 0,
+            "away": 2,
+            "prob": 0.0999
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "prob": 0.0985
+          },
+          {
+            "home": 0,
+            "away": 3,
+            "prob": 0.0689
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-26T16:56:42+08:00"
+  },
+  "7e6aee294ea1a4792c59558791084528": {
+    "prediction": {
+      "game_id": "7e6aee294ea1a4792c59558791084528",
+      "sport": "FIFA",
+      "home": "Senegal",
+      "away": "Iraq",
+      "start_time": "2026-06-27T03:00:00+08:00",
+      "market": {
+        "asian_handicap": -2.0,
+        "over_under": 3.0,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-26T08:56:43.432385+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "draw": 0.1452,
+        "home": 0.7708,
+        "away": 0.084
+      },
+      "best_odds": {
+        "home": 1.25,
+        "away": 13.0,
+        "draw": 6.95
+      },
+      "edge": {
+        "draw": 0.0089,
+        "home": -0.0365,
+        "away": 0.0926
+      },
+      "best_pick": {
+        "outcome": "away",
+        "edge": 0.0926,
+        "odds": 13.0
+      },
+      "avg_overround": 0.0474,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-26T16:56:42+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 2.5,
+        "lambda_away": 0.5,
+        "expected_total": 3.0,
+        "supremacy": 2.0,
+        "outcome_probs": {
+          "home": 0.8107,
+          "draw": 0.1344,
+          "away": 0.0549
+        },
+        "top_scorelines": [
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.1556
+          },
+          {
+            "home": 3,
+            "away": 0,
+            "prob": 0.1297
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.1245
+          },
+          {
+            "home": 4,
+            "away": 0,
+            "prob": 0.081
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0778
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.807,
+          "draw": 0.1368,
+          "away": 0.0561
+        },
+        "top_scorelines": [
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.1566
+          },
+          {
+            "home": 3,
+            "away": 0,
+            "prob": 0.1298
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.1222
+          },
+          {
+            "home": 4,
+            "away": 0,
+            "prob": 0.0828
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0782
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-26T16:56:43+08:00"
   }
 }
