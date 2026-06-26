@@ -1040,12 +1040,14 @@
   },
   "c35d300c49e37e20f594b68819c65af4": {
     "early": true,
-    "updated_at": "2026-06-26T06:07:38+08:00",
-    "pre": true
+    "updated_at": "2026-06-26T09:53:27+08:00",
+    "pre": true,
+    "post": true
   },
   "96d5d5f79ecf6da3f4476ede6c7c5be2": {
     "early": true,
-    "updated_at": "2026-06-25T19:23:46+08:00"
+    "updated_at": "2026-06-26T09:53:27+08:00",
+    "post": true
   },
   "e72272fad7813989b91104d828e36032": {
     "early": true,
