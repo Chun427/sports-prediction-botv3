@@ -151,6 +151,7 @@ def run_pregame_push(
     games: Iterable[dict],
     pusher: Pusher,
     predictor: Predictor | None = None,
+    refresh_fetcher: Fetcher | None = None,
 ) -> list[str]:
     """
     對落在賽前窗、且尚未推過的場次推播。
@@ -161,10 +162,34 @@ def run_pregame_push(
       • dict → 附在 game['prediction']，進入推播流程。
       • None → No Prediction Available：不推、不 mark、輸出 SKIP_NO_PREDICTION，
                不視為錯誤、不影響其他比賽（idempotency 狀態不變）。
+    refresh_fetcher（可選）：近賽選擇性刷新用。只對「即將推播」的場重抓最新 odds
+      （additive / flagged / guarded）；None 或失敗 → 沿用 pool，行為等同未啟用。
     """
     pushed: list[str] = []
     games = list(games)  # OBS：materialize 以利計數（fetcher 本就回 list，行為不變）
     obs.info("pregame.scan", games_count=len(games), window_min=PREGAME_WINDOW_MIN)
+
+    # ── 近賽選擇性刷新（pre-pass）：只對「在賽前窗、尚未推」的場重抓最新 odds，
+    #    就地更新後讓下方既有迴圈以新 odds 自然重算。整段 guarded，絕不影響推播。──
+    if refresh_fetcher is not None:
+        try:
+            import near_match_refresh
+            targets = []
+            for g in games:
+                gid = str(g.get("id", "")).strip()
+                if not gid or dm.is_pushed(gid, "pre"):
+                    continue
+                try:
+                    st = _parse_dt(g["start_time"])
+                except (KeyError, ValueError, TypeError):
+                    continue
+                if in_pregame_window(st, now):
+                    targets.append(g)
+            if targets:
+                near_match_refresh.refresh(targets, refresh_fetcher, now=now)
+        except Exception as exc:  # noqa: BLE001 — 刷新任何問題都不可影響推播
+            obs.warn("near_refresh.skipped", err=str(exc))
+
     for g in games:
         gid = str(g.get("id", "")).strip()
         if not gid:
@@ -428,7 +453,8 @@ def tick(now: datetime, fetcher: Fetcher, pusher: Pusher,
     except AllKeysUnavailable as exc:
         obs.error("tick.skip_all_keys_unavailable", err=str(exc))
         games = None
-    pushed = run_pregame_push(now, games, pusher, predictor=predictor) if games is not None else []
+    pushed = run_pregame_push(now, games, pusher, predictor=predictor,
+                              refresh_fetcher=fetcher) if games is not None else []
 
     if early_pusher is not None and games is not None:
         run_early_push(now, games, early_pusher, predictor=predictor)
