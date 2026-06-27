@@ -107,7 +107,7 @@
       "phase": "pre_match_40m"
     },
     "pre_pushed_at": "2026-06-26T07:38:09+08:00",
-    "post_attempts": 16
+    "post_attempts": 17
   },
   "eb42c676c8d9098229ca8fbdd8c1c7aa": {
     "prediction": {
@@ -762,5 +762,346 @@
       "phase": "early_12h"
     },
     "pre_pushed_at": "2026-06-27T16:17:04+08:00"
+  },
+  "f5d5cee320cc7a8d99cb308397d86c97": {
+    "prediction": {
+      "game_id": "f5d5cee320cc7a8d99cb308397d86c97",
+      "sport": "MLB",
+      "home": "Tampa Bay Rays",
+      "away": "Arizona Diamondbacks",
+      "start_time": "2026-06-28T06:11:00+08:00",
+      "market": {
+        "asian_handicap": -1.5,
+        "over_under": 8.0,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-27T10:26:53.719114+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "home": 0.5837,
+        "away": 0.4163
+      },
+      "best_odds": {
+        "home": 1.68,
+        "away": 2.35
+      },
+      "edge": {
+        "home": -0.0194,
+        "away": -0.0216
+      },
+      "best_pick": null,
+      "avg_overround": 0.0386,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-27T18:26:53+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "MLB",
+        "lambda_home": 4.75,
+        "lambda_away": 3.25,
+        "expected_total": 8.0,
+        "supremacy": 1.5,
+        "outcome_probs": {
+          "home": 0.6366,
+          "draw": 0.1258,
+          "away": 0.2376
+        },
+        "top_scorelines": [
+          {
+            "home": 4,
+            "away": 3,
+            "prob": 0.0408
+          },
+          {
+            "home": 5,
+            "away": 3,
+            "prob": 0.0387
+          },
+          {
+            "home": 4,
+            "away": 2,
+            "prob": 0.0376
+          },
+          {
+            "home": 5,
+            "away": 2,
+            "prob": 0.0357
+          },
+          {
+            "home": 3,
+            "away": 3,
+            "prob": 0.0343
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.6372,
+          "draw": 0.1254,
+          "away": 0.2374
+        },
+        "top_scorelines": [
+          {
+            "home": 4,
+            "away": 3,
+            "prob": 0.0406
+          },
+          {
+            "home": 4,
+            "away": 2,
+            "prob": 0.0369
+          },
+          {
+            "home": 5,
+            "away": 2,
+            "prob": 0.0366
+          },
+          {
+            "home": 5,
+            "away": 3,
+            "prob": 0.0364
+          },
+          {
+            "home": 3,
+            "away": 3,
+            "prob": 0.0355
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-27T18:26:53+08:00"
+  },
+  "537c0997cd899394f47f16545b7068b2": {
+    "prediction": {
+      "game_id": "537c0997cd899394f47f16545b7068b2",
+      "sport": "FIFA",
+      "home": "Croatia",
+      "away": "Ghana",
+      "start_time": "2026-06-28T05:00:00+08:00",
+      "market": {
+        "asian_handicap": -0.5,
+        "over_under": 2.5,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-27T10:26:54.248860+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "home": 0.503,
+        "draw": 0.3075,
+        "away": 0.1895
+      },
+      "best_odds": {
+        "home": 1.94,
+        "away": 5.29,
+        "draw": 3.16
+      },
+      "edge": {
+        "home": -0.0242,
+        "draw": -0.0282,
+        "away": 0.0024
+      },
+      "best_pick": {
+        "outcome": "away",
+        "edge": 0.0024,
+        "odds": 5.29
+      },
+      "avg_overround": 0.0478,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-27T18:26:53+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 1.5,
+        "lambda_away": 1.0,
+        "expected_total": 2.5,
+        "supremacy": 0.5,
+        "outcome_probs": {
+          "home": 0.4879,
+          "draw": 0.2598,
+          "away": 0.2522
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.1231
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1231
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.0923
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0923
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "prob": 0.0821
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.4869,
+          "draw": 0.256,
+          "away": 0.2571
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.123
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.1227
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.0927
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0902
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "prob": 0.0806
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-27T18:26:54+08:00"
+  },
+  "4be17c8e1ccfecb0f2a5ef79e045c415": {
+    "prediction": {
+      "game_id": "4be17c8e1ccfecb0f2a5ef79e045c415",
+      "sport": "FIFA",
+      "home": "Panama",
+      "away": "England",
+      "start_time": "2026-06-28T05:00:00+08:00",
+      "market": {
+        "asian_handicap": 2.0,
+        "over_under": 3.25,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-06-27T10:26:54.799994+00:00"
+      },
+      "bookmaker_count": 9,
+      "fair_prob": {
+        "home": 0.0608,
+        "draw": 0.113,
+        "away": 0.8262
+      },
+      "best_odds": {
+        "home": 18.0,
+        "away": 1.17,
+        "draw": 9.0
+      },
+      "edge": {
+        "home": 0.0944,
+        "draw": 0.0173,
+        "away": -0.0334
+      },
+      "best_pick": {
+        "outcome": "home",
+        "edge": 0.0944,
+        "odds": 18.0
+      },
+      "avg_overround": 0.0487,
+      "model": "market_implied_v1",
+      "generated_at": "2026-06-27T18:26:54+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 0.625,
+        "lambda_away": 2.625,
+        "expected_total": 3.25,
+        "supremacy": -2.0,
+        "outcome_probs": {
+          "home": 0.0657,
+          "draw": 0.1338,
+          "away": 0.8005
+        },
+        "top_scorelines": [
+          {
+            "home": 0,
+            "away": 2,
+            "prob": 0.1336
+          },
+          {
+            "home": 0,
+            "away": 3,
+            "prob": 0.1169
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "prob": 0.1018
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "prob": 0.0835
+          },
+          {
+            "home": 0,
+            "away": 4,
+            "prob": 0.0767
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.0672,
+          "draw": 0.1341,
+          "away": 0.7987
+        },
+        "top_scorelines": [
+          {
+            "home": 0,
+            "away": 2,
+            "prob": 0.1295
+          },
+          {
+            "home": 0,
+            "away": 3,
+            "prob": 0.1178
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "prob": 0.1002
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "prob": 0.0811
+          },
+          {
+            "home": 0,
+            "away": 4,
+            "prob": 0.0778
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-06-27T18:26:54+08:00"
   }
 }
