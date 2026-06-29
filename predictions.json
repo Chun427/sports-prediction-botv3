@@ -767,7 +767,8 @@
       },
       "phase": "pre_match_40m"
     },
-    "pre_pushed_at": "2026-06-30T03:56:49+08:00"
+    "pre_pushed_at": "2026-06-30T03:56:49+08:00",
+    "post_attempts": 1
   },
   "67d21f1e1c41537ef5b58b9abb1ff742": {
     "prediction": {
