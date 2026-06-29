@@ -106,6 +106,7 @@
       },
       "phase": "early_12h"
     },
-    "pre_pushed_at": "2026-06-28T20:08:07+08:00"
+    "pre_pushed_at": "2026-06-28T20:08:07+08:00",
+    "post_attempts": 1
   }
 }
