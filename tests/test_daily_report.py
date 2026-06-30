@@ -31,8 +31,9 @@ def test_render_format_per_sport_and_na():
     ]
     msg = dr.render_daily(_now(), rows)
     assert "📅 今日戰報 06/18" in msg
-    assert "🎯 本日總命中" in msg
+    assert "📊 本日總命中 6/9" in msg              # 總計＝各市場加總（比分僅FIFA：3+2+2+2 / ...）
     assert "⚽ 足球（2場）" in msg and "⚾ 棒球（1場）" in msg
+    assert "🏀 籃球（0場）" in msg and "無已驗證資料" in msg  # 0場顯示提示
     assert "🎯 整體命中率" in msg
     assert "比分 1/2（50%）" in msg          # 足球有比分段
     assert "大小 0/0（—）" in msg            # MLB 無 OU 資料 → 誠實 N/A，不捏造
