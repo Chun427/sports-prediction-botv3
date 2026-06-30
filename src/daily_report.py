@@ -60,15 +60,22 @@ def _line(label: str, hit: int, tot: int) -> str:
 def render_daily(now, today_rows: list[dict]) -> str:
     """today_rows = 當天已驗證的 verified_history 列（dict）。"""
     date_str = now.astimezone(TW_TZ).strftime("%m/%d")
-    out = [
-        f"📅 今日戰報 {date_str}", _DIV, "🎯 本日總命中",
-        _line("獨贏", *_rate(today_rows, "moneyline_hit")),
-        _line("讓分", *_rate(today_rows, "ah_hit")),
-        _line("大小", *_rate(today_rows, "ou_hit")),
-    ]
-    # 比分僅 FIFA 有意義（MLB/NBA 無台彩正確比分市場）→ 只統計 FIFA，避免分母被污染。
+    # 本日總命中：各市場結果並列；比分僅 FIFA（MLB/NBA 無正確比分市場）。
+    # 📊 總計 = 所有市場 numerator/denominator 加總（各市場分母可不同，比分分母僅 FIFA）。
+    _ml = _rate(today_rows, "moneyline_hit")
+    _ah = _rate(today_rows, "ah_hit")
+    _ou = _rate(today_rows, "ou_hit")
     _fifa_rows = [r for r in today_rows if (r.get("sport") or "").upper() == "FIFA"]
     _sc_all = _rate(_fifa_rows, "scoreline_hit")
+    _tot_h = _ml[0] + _ah[0] + _ou[0] + _sc_all[0]
+    _tot_n = _ml[1] + _ah[1] + _ou[1] + _sc_all[1]
+    out = [
+        f"📅 今日戰報 {date_str}", _DIV,
+        _line("📊 本日總命中", _tot_h, _tot_n),
+        _line("獨贏", *_ml),
+        _line("讓分", *_ah),
+        _line("大小", *_ou),
+    ]
     if _sc_all[1] > 0:                              # 當天有 FIFA 比分資料才顯示
         out.append(_line("比分", *_sc_all))
     by_sport: dict[str, list] = {}
@@ -78,6 +85,7 @@ def render_daily(now, today_rows: list[dict]) -> str:
     for sp in _SPORT_ORDER:
         rows = by_sport.get(sp)
         if not rows:
+            out += [_DIV, f"{_SPORT_LABEL[sp]}（0場）", "無已驗證資料"]
             continue
         ml, ah, ou, sc = (_rate(rows, "moneyline_hit"), _rate(rows, "ah_hit"),
                           _rate(rows, "ou_hit"), _rate(rows, "scoreline_hit"))
