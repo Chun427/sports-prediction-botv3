@@ -98,14 +98,34 @@ Turkey 1-2 USA
 
 ### ③ 每日戰報
 
+> 每日彙整當天所有已驗證賽事的命中表現。各市場結果並列（分母可不同）；比分僅統計 FIFA。
+
 ```
-📅 今日戰報 06/26
+📅 今日戰報 06/30
 ━━━━━━━━
-🎯 本日總命中
-獨贏 x/y（z%）
-讓分 x/y（z%）
-大小 x/y（z%）
-（依當日各球類分項統計）
+📊 本日總命中 25/49（51%）   ← 各市場 numerator/denominator 加總
+獨贏 10/16（62%）
+讓分  7/16（44%）
+大小  5/14（36%）
+比分  3/3（100%）            ← 僅 FIFA（MLB/NBA 無正確比分市場）
+━━━━━━━━
+⚽ 足球（3場）
+🎯 整體命中率 7/12（58%）
+獨贏 1/3（33%）
+讓分 1/3（33%）
+大小 2/3（67%）
+比分 3/3（100%）
+━━━━━━━━
+⚾ 棒球（13場）
+🎯 整體命中率 18/37（49%）
+獨贏 9/13（69%）
+讓分 6/13（46%）
+大小 3/11（27%）             ← 無比分行（棒球無此市場）
+━━━━━━━━
+🏀 籃球（0場）
+無已驗證資料                 ← 0 場顯式提示
+━━━━━━━━
+📡 數據來源：系統統計
 ```
 
 ---
@@ -172,6 +192,15 @@ Pool（weekly_games.json）
 - **核心凍結**：`predict`（market_implied_v1）、score_model、monte_carlo、notifier 格式不隨意更動。
 - **Additive / Rollback / Flag**：新增功能皆獨立、可移除、可關閉，不影響既有流程。
 - **idempotent 推播**：同場同階段只推一次；送失敗才重試。
+
+## 🛡️ 資料治理（Data Integrity）
+
+`verified_history.csv` 是**唯一真實來源（single source of truth）**，所有命中率 / 戰報 / 稽核皆依此。為避免「跨運動 schema 污染」，遵守以下規則：
+
+- **跨運動隔離（Sport Isolation）**：`scoreline_hit`、`total_goals_hit` **僅 FIFA 有意義**。MLB/NBA 雖然 Poisson 也會產生 top_scorelines，但台彩無棒球/籃球的正確比分市場 → 這些欄位在非 FIFA 一律寫入 `None`（見 `verified_enrich._scoreline_hit` 的 `is_fifa` gate），避免污染下游 `daily_report` 顯示與 `audit_engine` 統計。
+- **None-safe 聚合**：缺值一律 `None`，**永不當成 0**、永不回填歷史空缺。`audit_engine._avg` 會跳過 `None`，故非 FIFA 的比分不會稀釋全體指標。
+- **特徵純度（Feature Purity）**：每個指標需「可獨立解讀、跨運動安全、重跑可重現」。未來任何運動擴充（NBA 進階數據、MLB props…）都不得污染 FIFA schema。
+- **顯示層 vs 來源層**：`daily_report` 的 FIFA-only 過濾是顯示層防火牆；真正的源頭乾淨由 `verified_enrich` 保證。兩層都守。
 
 ## 🔭 觀察 / 待累積（Roadmap）
 
