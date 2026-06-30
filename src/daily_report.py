@@ -100,16 +100,20 @@ def _try_send_day(day, now, games, verified, pusher, *, allow_force):
     gid = f"daily-{day:%Y%m%d}"
     if dm.is_pushed(gid, _STAGE):
         return None
+    # ── 真實來源 = verified_history（永久），依「驗證時間的 TW 日期」取當天真實場。
+    #    不再用 weekly_games 的 game_id 反查（那是 48h 滾動快取，舊日期會滾掉→補送失效）。──
+    day_rows = [r for r in verified
+                if (_parse(r.get("verified_at")) and
+                    _parse(r.get("verified_at")).astimezone(TW_TZ).date() == day)]
+    # day_games 僅用於「今日是否全部打完」判定（仍在池內的當日場）；昨日多半已滾出 → 視為已 settled。
     day_games = [g for g in games
                  if (_parse(g.get("start_time")) and
                      _parse(g.get("start_time")).astimezone(TW_TZ).date() == day)]
-    if not day_games:
-        return None
-    day_ids = {g.get("id") for g in day_games}
+    if not day_rows and not day_games:
+        return None  # 該日完全無資料（無真實場可送，也無候選）
     verified_ids = {r.get("game_id") for r in verified}
-    day_rows = [r for r in verified if r.get("game_id") in day_ids]
 
-    # all_settled = 每場皆「已驗證」或「開賽逾 12h（過期）」
+    # all_settled = 每場皆「已驗證」或「開賽逾 12h（過期）」；無 day_games（已滾出池）→ 預設 True
     all_settled = True
     for g in day_games:
         st = _parse(g.get("start_time"))
