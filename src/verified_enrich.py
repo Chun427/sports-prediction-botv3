@@ -53,6 +53,9 @@ def enrich(prediction: dict, result: dict, sport: str) -> dict:
     def _scoreline_hit():
         # 正確比分僅 FIFA 有意義（MLB/NBA 雖有 Poisson top_scorelines，但無台彩比分市場）→ 非 FIFA 一律 None。
         # 比照 _total_goals_hit 的 is_fifa gate，避免 cross-sport schema 污染 verified_history。
+        # NOTE: scoreline_hit is intentionally FIFA-scoped to avoid cross-sport contamination.
+        # All non-FIFA values must remain None to preserve feature-space purity for downstream
+        # consumers (daily_report display, audit_engine aggregation, future ML features).
         if not is_fifa:
             return None
         tops = ms.get("top_scorelines")
