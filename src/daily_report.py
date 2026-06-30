@@ -39,7 +39,8 @@ def _parse(ts):
 
 
 def _istrue(v) -> bool:
-    return str(v).strip().lower() == "true"
+    # 同時支援 True/False 與 1/0 兩種編碼（scoreline_hit 用 1/0，其餘用 True/False）
+    return str(v).strip().lower() in ("true", "1")
 
 
 def _has(v) -> bool:
@@ -65,7 +66,9 @@ def render_daily(now, today_rows: list[dict]) -> str:
         _line("讓分", *_rate(today_rows, "ah_hit")),
         _line("大小", *_rate(today_rows, "ou_hit")),
     ]
-    _sc_all = _rate(today_rows, "scoreline_hit")   # 比分僅 FIFA 有值（MLB/NBA=None 不計）
+    # 比分僅 FIFA 有意義（MLB/NBA 無台彩正確比分市場）→ 只統計 FIFA，避免分母被污染。
+    _fifa_rows = [r for r in today_rows if (r.get("sport") or "").upper() == "FIFA"]
+    _sc_all = _rate(_fifa_rows, "scoreline_hit")
     if _sc_all[1] > 0:                              # 當天有 FIFA 比分資料才顯示
         out.append(_line("比分", *_sc_all))
     by_sport: dict[str, list] = {}
