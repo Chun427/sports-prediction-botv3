@@ -51,9 +51,13 @@ def enrich(prediction: dict, result: dict, sport: str) -> dict:
     direction = _safe(lambda: result_verifier.main_direction(pred))
 
     def _scoreline_hit():
+        # 正確比分僅 FIFA 有意義（MLB/NBA 雖有 Poisson top_scorelines，但無台彩比分市場）→ 非 FIFA 一律 None。
+        # 比照 _total_goals_hit 的 is_fifa gate，避免 cross-sport schema 污染 verified_history。
+        if not is_fifa:
+            return None
         tops = ms.get("top_scorelines")
         if not tops or not has_score:
-            return None  # MLB/NBA 無 top_scorelines → None（不算 0，避免誤導）
+            return None
         return sum(1 for s in tops if s.get("home") == hs and s.get("away") == aws)
 
     def _total_goals_hit():
