@@ -1622,11 +1622,13 @@
   },
   "cea9b7f2ef253ee28f6d6888b9eecd00": {
     "early": true,
-    "updated_at": "2026-07-01T16:49:37+08:00"
+    "updated_at": "2026-07-02T07:08:07+08:00",
+    "post": true
   },
   "658ac8cbf214ca3cc150109b4ddc1e74": {
     "early": true,
-    "updated_at": "2026-07-01T16:49:37+08:00"
+    "updated_at": "2026-07-02T07:08:08+08:00",
+    "post": true
   },
   "daily-20260701": {
     "daily": true,
@@ -1638,11 +1640,13 @@
   },
   "9bc02db3da6a621d686c70c4384d1a9f": {
     "early": true,
-    "updated_at": "2026-07-01T19:47:19+08:00"
+    "updated_at": "2026-07-02T07:08:06+08:00",
+    "pre": true
   },
   "cf32c9650e5e4179dbc82552ff735228": {
     "early": true,
-    "updated_at": "2026-07-01T19:47:19+08:00"
+    "updated_at": "2026-07-02T07:08:06+08:00",
+    "pre": true
   },
   "9eeb4876001f5a52ce3c3641bd5f1f2f": {
     "early": true,
