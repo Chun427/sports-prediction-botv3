@@ -1207,5 +1207,121 @@
       "phase": "early_12h"
     },
     "pre_pushed_at": "2026-07-01T19:47:19+08:00"
+  },
+  "9eeb4876001f5a52ce3c3641bd5f1f2f": {
+    "prediction": {
+      "game_id": "9eeb4876001f5a52ce3c3641bd5f1f2f",
+      "sport": "FIFA",
+      "home": "USA",
+      "away": "Bosnia & Herzegovina",
+      "start_time": "2026-07-02T08:00:00+08:00",
+      "market": {
+        "asian_handicap": -1.375,
+        "over_under": 2.5,
+        "odds_source": "the-odds-api/consensus",
+        "timestamp": "2026-07-01T12:05:56.689742+00:00"
+      },
+      "bookmaker_count": 8,
+      "fair_prob": {
+        "draw": 0.1977,
+        "home": 0.6852,
+        "away": 0.1172
+      },
+      "best_odds": {
+        "home": 1.41,
+        "away": 9.5,
+        "draw": 5.0
+      },
+      "edge": {
+        "draw": -0.0117,
+        "home": -0.0339,
+        "away": 0.1131
+      },
+      "best_pick": {
+        "outcome": "away",
+        "edge": 0.1131,
+        "odds": 9.5
+      },
+      "avg_overround": 0.0502,
+      "model": "market_implied_v1",
+      "generated_at": "2026-07-01T20:05:56+08:00",
+      "model_score": {
+        "type": "poisson",
+        "sport": "FIFA",
+        "lambda_home": 1.938,
+        "lambda_away": 0.562,
+        "expected_total": 2.5,
+        "supremacy": 1.38,
+        "outcome_probs": {
+          "home": 0.7025,
+          "draw": 0.1991,
+          "away": 0.0984
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.159
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.1541
+          },
+          {
+            "home": 3,
+            "away": 0,
+            "prob": 0.0995
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.0895
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.0867
+          }
+        ]
+      },
+      "model_mc": {
+        "n": 20000,
+        "win_prob": {
+          "home": 0.7053,
+          "draw": 0.1935,
+          "away": 0.1013
+        },
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 0,
+            "prob": 0.1626
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "prob": 0.1524
+          },
+          {
+            "home": 3,
+            "away": 0,
+            "prob": 0.1004
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "prob": 0.0859
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "prob": 0.084
+          }
+        ]
+      },
+      "phase": "early_12h"
+    },
+    "pre_pushed_at": "2026-07-01T20:05:56+08:00"
   }
 }
