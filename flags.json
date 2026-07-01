@@ -1591,8 +1591,9 @@
   },
   "2788dd0a2625745466747d10af8f3447": {
     "early": true,
-    "updated_at": "2026-07-02T00:26:57+08:00",
-    "pre": true
+    "updated_at": "2026-07-02T04:22:22+08:00",
+    "pre": true,
+    "post": true
   },
   "5ff7744314f224c18d1604ee9cc19263": {
     "early": true,
@@ -1601,7 +1602,8 @@
   },
   "f59c1e3050cb7baeab3f1b997ee3a895": {
     "early": true,
-    "updated_at": "2026-07-01T16:49:34+08:00"
+    "updated_at": "2026-07-02T04:22:22+08:00",
+    "post": true
   },
   "53f6cd5e0c90cba30f35638b85a72ef6": {
     "early": true,
