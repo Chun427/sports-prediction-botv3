@@ -275,3 +275,4 @@ verified_at,game_id,sport,winner,pick_outcome,pick_hit,moneyline_hit,realized_re
 2026-07-01T12:57:03+08:00,1c4be9313fc412b34cc158daa4b7fdac,MLB,away,away,True,True,0.6299999999999999,0.5987,market_implied_v1,True,False,,,-0.0241,0.6147,0.6147,0.5987,11.0,12,early_12h
 2026-07-01T12:57:03+08:00,835944b5efc736fb06b73068a981fde5,MLB,home,home,True,True,0.56,0.6242,market_implied_v1,True,False,,,-0.0262,0.6429,0.6429,0.6242,7.0,11,early_12h
 2026-07-01T12:57:04+08:00,f58c55a9da96af562c31b7c5cca40187,FIFA,home,home,True,True,1.2999999999999998,0.4234,market_implied_v1,True,,1,True,-0.0263,0.4795,0.4795,0.4234,2.0,2,early_12h
+2026-07-02T02:25:21+08:00,5ff7744314f224c18d1604ee9cc19263,FIFA,home,home,True,True,0.29000000000000004,0.7428,market_implied_v1,False,False,0,True,-0.0419,0.7295,0.7295,0.7428,2.5,3,early_12h
