@@ -283,3 +283,11 @@ verified_at,game_id,sport,winner,pick_outcome,pick_hit,moneyline_hit,realized_re
 2026-07-02T05:55:21+08:00,51cf948cf7f0602d670ed6a922636887,MLB,home,home,True,True,0.8300000000000001,0.5395,market_implied_v1,True,False,,,-0.0126,0.6129,0.6129,0.5395,11.5,26,early_12h
 2026-07-02T07:08:07+08:00,cea9b7f2ef253ee28f6d6888b9eecd00,MLB,home,away,False,False,-1.0,0.4893,market_implied_v1,False,False,,,-0.0399,0.6374,0.6374,0.5107,8.75,12,early_12h
 2026-07-02T07:08:08+08:00,658ac8cbf214ca3cc150109b4ddc1e74,FIFA,home,home,True,True,1.2000000000000002,0.443,market_implied_v1,True,False,0,False,-0.0255,0.4875,0.4875,0.443,2.5,5,early_12h
+2026-07-02T12:35:08+08:00,5961513fee89b7b96eae78376ec2fe3f,MLB,home,home,True,True,0.76,0.5544,market_implied_v1,True,False,,,-0.0242,0.6361,0.6361,0.5544,8.0,16,early_12h
+2026-07-02T12:35:09+08:00,9bc02db3da6a621d686c70c4384d1a9f,MLB,home,home,True,True,0.8,0.5493,market_implied_v1,True,True,,,-0.0113,0.6294,0.6294,0.5493,9.0,6,pre_match_40m
+2026-07-02T12:35:09+08:00,cf32c9650e5e4179dbc82552ff735228,MLB,away,away,True,True,0.6799999999999999,0.5771,market_implied_v1,True,True,,,-0.0305,0.6212,0.6212,0.5771,10.5,4,pre_match_40m
+2026-07-02T12:35:10+08:00,155102fc6ca2d46399a620f515ffe2b3,MLB,home,home,True,True,0.6399999999999999,0.596,market_implied_v1,True,True,,,-0.0226,0.6309,0.6309,0.596,8.5,6,early_12h
+2026-07-02T12:35:10+08:00,c771b9e374413d651231684704a5bbfe,MLB,away,home,False,False,-1.0,0.4538,market_implied_v1,False,False,,,-0.0224,0.6338,0.6338,0.5462,8.5,11,early_12h
+2026-07-02T12:35:11+08:00,8cb46e5f7992c07772b03c820bcc5a46,MLB,home,away,False,False,-1.0,0.4327,market_implied_v1,False,True,,,-0.0185,0.6182,0.6182,0.5673,11.0,9,pre_match_40m
+2026-07-02T12:35:11+08:00,89e2407a67afd5e02ec12a372a53fa18,MLB,home,away,False,False,-1.0,0.3952,market_implied_v1,False,True,,,-0.0202,0.6251,0.6251,0.6048,9.5,8,early_12h
+2026-07-02T12:35:12+08:00,9eeb4876001f5a52ce3c3641bd5f1f2f,FIFA,home,home,True,True,0.4099999999999999,0.6852,market_implied_v1,True,True,1,True,-0.0339,0.7053,0.7053,0.6852,2.5,2,early_12h
